@@ -2,10 +2,10 @@
 title: Add the v1 tsconfig presets and preset smoke tests
 release_note: First set of shared TypeScript presets — layers (base, node22, node24, dom, workers, library, app, tooling, react, react-router, strictest) and ready-made combinations (node-library, node-tooling, vite-react-app, react-router-workers, workers-app, astro), tested under TypeScript 6 and 7.
 created_at: "2026-10-14T18:09:55Z"
-merged_at:
+merged_at: "2026-10-14T18:33:27Z"
 branch: r-276-author-v1-presets-and-preset-smoke-tests
-pr:
-commit:
+pr: 2
+commit: 0cfb41a
 author: rob@rheged.studio
 co_authors: []
 category: feature
@@ -16,9 +16,9 @@ issues:
   - R-2795
 affected_packages: []
 stats:
-  files_changed:
-  loc_added:
-  loc_removed:
+  files_changed: 73
+  loc_added: 3159
+  loc_removed: 95
   commits:
 ---
 
