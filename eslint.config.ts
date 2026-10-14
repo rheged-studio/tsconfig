@@ -35,10 +35,9 @@ export default defineConfig([
     },
   },
   // The base preset enables type-aware linting (parserOptions.project: true),
-  // which resolves each file to the nearest tsconfig.json. The published build
-  // config (tsconfig.json) is deliberately src-only, so infra/ files aren't in
-  // it. Pin an explicit project that spans src/ + infrastructure/ so type-aware
-  // rules resolve every linted file without leaking infra into the dist build.
+  // which resolves each file to the nearest tsconfig.json. This package is
+  // config-only (no src/ or dist/ build, R-275), so pin the explicit lint
+  // project that spans the infrastructure/ tooling.
   {
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
