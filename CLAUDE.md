@@ -10,32 +10,32 @@ repo-specific guidance follows below.
 
 ## Repo
 
-Template repository for Rheged Studio npm packages. It ships a minimal, buildable pnpm + TypeScript ESM skeleton plus the shared workflow/release shell, so a new package can be generated and released without rebuilding the infrastructure each time.
+**`@rheged-studio/tsconfig`** — the estate's shared, layered TypeScript configuration presets: a
+**config-only** npm package that ships `tsconfig` JSON files for consumers to `extends`. There is no
+`src/` → `tsc` → `dist/` build. The Linear project is **tsconfig** (P-R-67); the v1 preset shape
+(layers, preset names, the `exports` pattern, compiler choices) is decided on **R-274**, preset
+content lands in **R-276**, and the first publish is **R-277**.
 
-The one-time org/repo settings that stand this up as a GitHub Template repository — and the settings every spawned repo inherits (Template flag, `GO/NO GO` ruleset, npm OIDC, `npm-release` environment, orchestrator onboarding, Claude review) — live in the [Setup section of the README](README.md#setup), the single source of truth for the non-copied setup. The list below covers the per-package code edits inside a generated repo, plus the non-copied repo/org steps (each cross-links its README subsection rather than duplicating the detail).
+The repo was spawned from **npm-package-template** and initialised with `/initialise-package-repo`
+(R-275). The template's build leg was stripped to make it config-only. Current state:
 
-When generating a package from this template, **run the `initialise-package-repo` skill** in the new repo (see "## Agent skills" below, and R-663). It drives the whole post-generation checklist below in one idempotent, dry-run-first pass — so the individual steps here are the _reference_ for what it does, not a manual walk you have to perform by hand. The one thing it deliberately leaves to you is authoring the real `src/` API.
+- **No presets yet.** `files` is `["README.md"]` and `exports` exposes only `./package.json` until
+  R-276 adds the preset JSONs and the agreed `exports` shape. Update `files`, `exports` and
+  `send-it`'s `shippablePaths` (in `.claude/skills/send-it/config.json` and the `.agents/` mirror)
+  when the presets land.
+- **Publishing is deferred to R-277.** Clacks lists the repo with `release: null`, so it opens no
+  release-please PRs and the version stays at `0.0.0`. The `v0.0.0` **baseline tag** matches that
+  version, so `pkg-release.yml` (the `Release` workflow, enabled) skips publishing on every push to
+  `main` and the `changelog-enrich` job still fills post-merge changelog metadata. Do **not** delete
+  that tag or bump the version by hand before R-277 — an untagged version makes `Release` attempt an
+  npm publish that fails without a Trusted Publisher.
+- **Already applied (R-275):** the `GO/NO GO` and `Trunk` rulesets with the road-runner-bot bypass,
+  the `main`-only `npm-release` environment, `Release` enabled, and the skill configs (Linear key
+  `R`). Still to do at first publish (R-277): the bootstrap publish, the Trusted Publisher, and
+  flipping the Clacks `fleet.json` entry to `release: "npm"`.
 
-The skill **automates**:
-
-- **Renames the `package.json` identity** — `name` (placeholder `@rheged-studio/npm-package-template`), `description`, `keywords`, `repository`, `homepage`, `bugs` — deriving name/URLs from `gh repo view` and prompting for `description`/`keywords`.
-- **Re-seeds `.release-please-manifest.json`** so `"."` matches the new package's starting `package.json` version (the template ships `"0.0.0"`). Leaving it stale is the #1 release-please failure mode. `release-please-config.json` itself needs no edit.
-- **Resets `changelog/` to just its `README.md`.** The template dogfoods its own changelog process, so `changelog/` accumulates dated entries documenting the _template's own_ development. "Use this template" copies them into the generated repo, where they are unrelated noise — and because they are version-less, the post-merge enricher would stamp the new package's first version onto them and sweep them into its first release notes (it stamps _every_ version-less entry, not just the current PR's). The skill deletes every dated entry, keeping only `README.md`; the template's entries are preserved in its own git history, and the repo's own first real entry is written by `/send-it`.
-- **Adapts the inherited `GLOSSARY.md`** (R-2441) — rewrites its context header from the repo's facts and strips the template-only terms; the inherited release-shell terms are kept.
-- **Points `infrastructure/repo-config.yaml`** at the new package (scope, default branch) where values differ, preserving comments.
-- **Pulls the shared skills** via `npx skills add … --copy` from `rheged-studio/agent-skills` for the locked set (both Claude Code and Cursor trees) — pull-on-instantiation (R-776). Committed copies in the template are bootstrap only; the repo-local `initialise-package-repo` scaffolder is never overwritten.
-- **Clears the template-seed skill-config gitignore** (R-812) so spawned consumers can commit the resolved per-skill `config.json` files — then **generates those configs** by wrapping the `rheged-skills-setup` skill (only the neutral `config.example.json` ships in the vendored bundles). Runs **after** the skills pull so configs match the pulled versions.
-- **Re-creates the `GO/NO GO` required-check ruleset** (rulesets are **not** copied by "Use this template") — pinned to the GitHub Actions integration, **with road-runner-bot as a bypass actor** so `pkg-release.yml`'s `changelog-enrich` write-back to `main` succeeds (R-1019; see "CI gate (`GO/NO GO`)" below). See [README → the required-check ruleset](README.md#the-required-check-ruleset).
-- **Ensures the Trunk changelog bypass** (ADR 0004 / R-808) — repo-level `Trunk` ruleset with `road-runner-bot` as a bypass actor so `pkg-release.yml`'s `changelog-enrich` job can push `changelog/**`. Creates `Trunk` when absent.
-- **Creates the `main`-restricted `npm-release` environment** (not copied; without it the OIDC publish has nowhere to deploy from). See [README → the npm-release environment](README.md#the-npm-release-environment).
-- **Enables the Release workflow** (`gh workflow enable Release`, done last — after the environment exists).
-
-The skill **verifies-and-reports** (needs org/browser/cross-repo privilege it can't take on itself), so you finish these by hand:
-
-- **Author the real `src/` API** — replace everything under `src/`; `src/index.ts` is the published entry point. The build/lint/release shell does not change. (Lint configs — `eslint.config.ts` extending `@rheged-studio/eslint-config`, `.markdownlint-cli2.jsonc` extending `@rheged-studio/markdownlint-config` — are inherited as-is; extend `eslint.config.ts` only for the opt-in presets you need: `testing`, `frameworkRouting`, `astro`, `sanity`, `storybook`, `tableComponents`.)
-- **Onboard the release-orchestrator** — the template ships every repo-side prerequisite, and road-runner-bot + `ROADRUNNER_*` are now provisioned org-wide (R-945), so this reduces to a single step: **add the repo to the orchestrator's `matrix.repo`** (R-648). The old per-repo "install road-runner-bot" and "grant `ROADRUNNER_*` selected access" (R-821) steps no longer apply. See [README → release-orchestrator onboarding](README.md#release-orchestrator-onboarding).
-- **Verify the Claude review prerequisites** — `CLAUDE_CODE_OAUTH_TOKEN` secret **and** the Claude GitHub App on the repo (the App install fixes the `git fetch … could not read Username` failure — R-621 / R-636). Preferably both are org-wide, in which case just confirm inheritance. See [README → Claude review prerequisites](README.md#claude-review-prerequisites).
-- **Bootstrap npm OIDC** — the manual first publish (passkey/WebAuthn), then the `v<initial>` git tag + GitHub release (so release-please has a baseline — R-1019), then configuring the Trusted Publisher. See [README → npm OIDC](README.md#npm-oidc-trusted-publishing) and "Bootstrap publish" below.
+The template's generation checklist and its [README Setup section](README.md#setup) are kept as the
+reference for what the release shell expects.
 
 ## Decisions live in Linear, not ADRs
 
@@ -55,9 +55,8 @@ pnpm, pinned via `packageManager` in `package.json`. Node 22 required (`.nvmrc`,
 
 ```bash
 pnpm install        # install deps (runs prepare → husky hook install)
-pnpm run build      # tsc → dist/ (the published artifact; consumers import from dist)
-pnpm tsc            # type-check only — src/ (no emit) + infrastructure/ via tsconfig.tools.json
-pnpm lint           # eslint over src/**
+pnpm tsc            # type-check only — the tooling project (tsconfig.tools.json), no emit
+pnpm lint           # eslint over infrastructure/tests
 pnpm lint:fix       # auto-fix
 pnpm lint:md        # markdownlint (CI: lint reusable caller)
 pnpm lint:yaml      # yamllint . (semantic YAML check; warnings non-blocking)
@@ -68,7 +67,7 @@ pnpm test:watch     # vitest in watch mode
 pnpm test:sh        # bats on infrastructure/tests/*.bats
 pnpm validate:changelog # schema-check changelog/*.md via changelog-core (CI: lint reusable caller)
 pnpm format         # prettier write
-pnpm clean          # remove node_modules + dist
+pnpm clean          # remove node_modules
 ```
 
 ## Agent skills
@@ -86,7 +85,7 @@ One further skill is **repo-local**, not from the shared bundle (it lives only i
 
 - **`/initialise-package-repo`** — the one-shot, idempotent post-generation setup for a repo freshly spawned from this template (R-663 / R-776). Resets `changelog/` to just its README (the changelog-poisoning fix), re-seeds `.release-please-manifest.json`, rewrites the `package.json` identity + `infrastructure/repo-config.yaml` from the repo's own facts, **adapts the inherited `GLOSSARY.md`** (rewrites its context header, strips the template-only terms), **pulls the shared skills** via `npx skills add … --copy`, **wraps and runs `rheged-skills-setup`** to generate every skill's `config.json`, and applies the non-copied GitHub settings (`npm-release` environment, `GO/NO GO` ruleset with the road-runner-bot bypass, Trunk changelog bypass, enabling Release) via `gh api` behind a confirmation gate — then verifies-and-reports the org/browser steps it can't automate. It **is** the executable form of the generation checklist at the top of this file. Dry-run first, safe to re-run.
 
-Each shared-bundle skill ships a neutral `config.example.json`. The real `config.json` is **generated on install, then committed in the consumer** (agent-skills v1.1.0 generated-config model / R-812). The template seed gitignores `.claude/skills/*/config.json` and `.agents/skills/*/config.json` so "Use this template" never copies a local resolved config into a new repo; `/initialise-package-repo` strips those ignore lines, runs `rheged-skills-setup`, and the spawned package **commits** the resulting configs. Run `rheged-skills-setup` again after a fresh install or a repo-fact change (`dist` as the shippable surface, `R` as the Linear issue key); it is idempotent (a second dry-run is a no-op). The template seeds `issueKeys: ["R"]` in every config copy (R-2654, legacy `A` dropped in R-2696), so a spawned package starts clean.
+Each shared-bundle skill ships a neutral `config.example.json`. The real `config.json` is **generated on install, then committed in the consumer** (agent-skills v1.1.0 generated-config model / R-812). The template seed gitignores `.claude/skills/*/config.json` and `.agents/skills/*/config.json` so "Use this template" never copies a local resolved config into a new repo; `/initialise-package-repo` strips those ignore lines, runs `rheged-skills-setup`, and the spawned package **commits** the resulting configs. Run `rheged-skills-setup` again after a fresh install or a repo-fact change (`R` as the Linear issue key; `shippablePaths` is set by hand because detection still proposes `dist`); it is idempotent (a second dry-run is a no-op). The template seeds `issueKeys: ["R"]` in every config copy (R-2654, legacy `A` dropped in R-2696), so a spawned package starts clean.
 
 **v1.1.0 behavioural changes (R-640).** Riding along with the v1.1.0 re-sync: `/send-it` decides release-type by the change's **semantic category** (the Conventional-Commit type of the work it commits), not by which paths the diff touches — the old `changelogScope`/`shippablePaths`-as-gate model is gone (`shippablePaths` is now advisory only); `/preflight` gains a `blockOnWarnings` knob (defaults to errors-only blocking); `/changelog` add-links is branch-scoped by default.
 
@@ -94,23 +93,33 @@ Each shared-bundle skill ships a neutral `config.example.json`. The real `config
 
 ## Source layout
 
-TypeScript source lives under `src/`, compiled by `tsc` to `dist/` (declarations + source maps). Only `dist/` is published (`files: ["dist"]`); `exports`/`main`/`module`/`types` all point into it. The workflow/release shell — `.github/`, `infrastructure/`, `.husky/`, `changelog/`, `release-please-config.json`, `.release-please-manifest.json` — is **not** part of the published artifact.
+This is a **config-only** package (R-275): there is no `src/` and no build. The published surface
+will be the preset JSON files (R-276); until then `files` is `["README.md"]` and `exports` exposes
+only `./package.json`. The workflow/release shell — `.github/`, `infrastructure/`, `.husky/`,
+`changelog/`, `release-please-config.json`, `.release-please-manifest.json` — is **not** part of the
+published artifact.
 
 ## Build / type-check / lint topology
 
-The published `dist/` must contain **only** the compiled `src/`, but the TypeScript tooling under `infrastructure/` still needs type-checking and type-aware linting. Three tsconfigs keep those concerns separate:
+There is no build. Three tsconfigs cover the repo's own tooling (not the shipped presets):
 
-- **`tsconfig.json`** — the build config. `rootDir: ./src`, `include: ["src/**/*.ts"]`, emits to `dist/`. `pnpm build` (`tsc`) uses it, so `dist/` stays src-only. Do **not** widen its `include` to "fix" linting — that re-emits infra into `dist/`.
-- **`tsconfig.tools.json`** — `noEmit`, `extends ./tsconfig.json`, covers `eslint.config.ts`, `infrastructure/scripts/**`, `infrastructure/tests/**`, `vitest.config.ts`. `pnpm tsc` runs it as a second pass to type-check the shell, tests, and the ESLint config.
-- **`tsconfig.eslint.json`** — `noEmit`, the linter's project. Spans `src/**` + the infra `.ts`. `eslint.config.ts` pins `parserOptions.project` to it so the base preset's type-aware rules (`project: true`) resolve every linted file regardless of directory. Without this pin ESLint would fail with "file not found by the project service" on infra files (they aren't in the src-only `tsconfig.json`). The ESLint config itself is **not** in this project — the preset's global ignores exclude `eslint.config.ts` from linting, so it is type-checked only via `tsconfig.tools.json`.
+- **`tsconfig.json`** — the shared compiler options, `noEmit`, spanning `eslint.config.ts`,
+  `vitest.config.ts` and any infrastructure `.ts`. Editors resolve against it.
+- **`tsconfig.tools.json`** — `extends ./tsconfig.json` over the same files. `pnpm tsc` runs it, and
+  CI's `build-test` typecheck lane runs it (`tsconfig: tsconfig.tools.json`).
+- **`tsconfig.eslint.json`** — the linter's project. `eslint.config.ts` pins
+  `parserOptions.project` to it so the base preset's type-aware rules resolve every linted file. The
+  ESLint config itself is excluded (the preset's global ignores skip it), so it is type-checked only
+  via `tsconfig.tools.json`.
 
-`extends` does **not** inherit `include`/`exclude` — only `compilerOptions` — so the two extra configs restate their own `include`/`exclude`.
+These stay until the package can extend its own presets (R-275). `extends` does **not** inherit
+`include`/`exclude` — only `compilerOptions` — so each config restates its own.
 
 ## Linting and formatting
 
 This package dogfoods the org's own shared configs:
 
-- **ESLint** — `eslint.config.ts` consumes `@rheged-studio/eslint-config`, composing the `base` stack plus the `typescript` overrides, then adds two local blocks: an `infrastructure/**/*.ts` override (`complexity: off` + `import/no-extraneous-dependencies` with `devDependencies: true`, since the shell scripts legitimately import devDeps), and the `tsconfig.eslint.json` project pin (see above). The preset also re-exports opt-in presets (`testing`, `frameworkRouting`, `astro`, `sanity`, `storybook`, `tableComponents`) — pull them in as a generated package needs them. The config is authored in `.ts` (loaded by `jiti`, a devDependency ESLint v9.18+ requires for TypeScript config) and wrapped in `defineConfig` from `eslint/config`, so the whole array — including the two local override blocks — is type-checked against the preset's shipped types (`./dist/index.d.ts`) instead of only failing at lint-run time. `pnpm tsc` type-checks it via `tsconfig.tools.json`.
+- **ESLint** — `eslint.config.ts` consumes `@rheged-studio/eslint-config`, composing the `base` stack plus the `typescript` overrides, then adds two local blocks: an `infrastructure/**/*.ts` override (`complexity: off` + `import/no-extraneous-dependencies` with `devDependencies: true`, since the shell scripts legitimately import devDeps), and the `tsconfig.eslint.json` project pin (see above). The preset also re-exports opt-in presets (`testing`, `frameworkRouting`, `astro`, `sanity`, `storybook`, `tableComponents`) — pull them in as a generated package needs them. The config is authored in `.ts` (loaded by `jiti`, a devDependency ESLint v9.18+ requires for TypeScript config) and wrapped in `defineConfig` from `eslint/config`, so the whole array — including the two local override blocks — is type-checked against the preset's shipped types instead of only failing at lint-run time. `pnpm tsc` type-checks it via `tsconfig.tools.json`.
 - **Markdown** — `.markdownlint-cli2.jsonc` extends `@rheged-studio/markdownlint-config`. Pre-commit auto-fixes staged `**/*.{md,mdx}` via lint-staged (`|| true`, so it never blocks); the `lint` reusable caller (markdown lane) enforces. (There is no root `CHANGELOG.md` to exclude — release-please runs with `skip-changelog`.)
 - **Prettier** — `pnpm format` runs `prettier --write .`; `.prettierignore` excludes `node_modules`, `dist`, `pnpm-lock.yaml`, and `tsconfig.json`.
 
@@ -262,7 +271,12 @@ orchestrator's inline finalise is retired later (R-801).
 
 ## Release workflow
 
-> **Disabled on this template repo.** The template's `src/` is a placeholder that is never published, so the Release workflow is switched off here (`gh workflow disable Release`) to avoid a failing publish — and an auto-opened failure issue — on every push to `main`. The workflow file stays in the tree because it is part of the shell that generated packages inherit; only its execution on _this_ repo is suppressed. Re-enable with `gh workflow enable Release` (and in any repo generated from this template — see the generation checklist at the top). Everything below describes the workflow as it runs in a real, publishing package.
+> **Dormant until R-277.** `Release` is **enabled** here, but this repo has not been published yet:
+> Clacks lists it with `release: null` (no release PRs), and the `v0.0.0` baseline tag matches the
+> unbumped `0.0.0` version, so every push to `main` is a clean publish no-op while the
+> `changelog-enrich` job still runs. The `release` job passes `build: false` (R-624 build-less
+> opt-out) because this config-only package has no `build` script. Everything below describes the
+> workflow once the bootstrap publish is done; the first real version will be above `0.0.0`.
 >
 > **Thin caller (R-639).** The release workflow is `.github/workflows/pkg-release.yml` — a thin caller of the estate's shared `reusable-pkg-release.yml` (SHA-pinned to v1.0.2), mirroring eslint-config. A `config` job loads `infrastructure/repo-config.yaml` and passes `npm-scope` / `node-version-file` / the registry URLs to the reusable workflow, which holds all the release logic described below. The file is `pkg-release.yml` (npm Trusted Publishing binds its OIDC subject to repository + workflow **filename**, so configure the Trusted Publisher against `pkg-release.yml`), but the workflow **name** stays `Release` so `gh workflow enable/disable Release` still works.
 
