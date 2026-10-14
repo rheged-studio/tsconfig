@@ -1,58 +1,50 @@
-# Rheged Studio NPM package template
+# @rheged-studio/tsconfig
 
-A GitHub Template repository for Rheged Studio npm packages — a minimal, buildable
-pnpm + TypeScript ESM skeleton plus the shared workflow/release shell, so a new package can be
-generated and released without rebuilding the infrastructure each time. Click **Use this
-template** to spawn a new package, then work through [Setup](#setup) below (the per-package code
-edits live in [`CLAUDE.md`](CLAUDE.md#repo)).
+Shared, layered TypeScript configuration presets for the Rheged Studio estate. Consumers will
+`extends` a preset instead of maintaining their own `tsconfig` from scratch.
+
+> **Status: pre-release.** No presets ship yet and the package is not on npm. The v1 shape (layers,
+> preset names, the `exports` pattern, compiler choices) is being settled in the **tsconfig** Linear
+> project (R-274); the presets land in R-276 and the first publish in R-277.
+
+## Requirements
+
+- TypeScript 6 or 7 (R-274, D1).
+- Node 22 and pnpm (pinned via `packageManager`) to work on this repo.
+
+## Development
+
+```bash
+pnpm install
+pnpm tsc            # type-check the repo's own tooling
+pnpm lint           # eslint (infrastructure/tests)
+pnpm test           # vitest
+pnpm lint:md        # markdownlint
+```
+
+Ship changes with `/send-it`. See [`CLAUDE.md`](CLAUDE.md) for the full command list, the CI gate and
+the release shell.
 
 ## Setup
 
-This repo is both the template and its own reference package. There are two audiences:
+This repo was spawned from **npm-package-template** and initialised with `/initialise-package-repo`
+(R-275). The subsections below are inherited from the template and describe what the release shell
+expects; they are kept as the reference for the npm bootstrap in R-277.
 
-- **Standing up a spawned repo?** Start at the [spawned-repo quick checklist](#spawned-repo-quick-checklist).
-- **Template maintainer setting up the org?** Jump to the one-time
-  [org-level bootstrap](#org-level-one-time-bootstrap).
+Done in R-275:
 
-> **Important:** branch protection, rulesets, and repo/org settings are **not** copied by GitHub's
-> "Use this template". Each spawned repo must re-apply the [repo-level settings](#repo-level-settings)
-> itself. This checklist is the single source of truth for the non-copied setup — `CLAUDE.md`'s
-> generation checklist links here rather than duplicating it.
->
-> These settings were proven on the `eslint-config` testbed (R-311 / R-312 / R-313 / R-314) and
-> reconciled to the current estate (release-please, the `GO/NO GO` aggregator check-run, and shared
-> reusable CI callers — R-371 / R-413 / R-424 / R-447 / R-432).
+- [x] Package identity, changelog reset, skill pull and skill configs.
+- [x] Config-only strip: no `src/` or build; `build: false` in CI and `pkg-release.yml`.
+- [x] `Require GO/NO GO gate` and `Trunk` rulesets, both with the road-runner-bot bypass.
+- [x] `main`-only `npm-release` environment; `Release` workflow enabled.
+- [x] `v0.0.0` baseline tag, so `Release` no-ops the publish while `changelog-enrich` runs.
+- [x] Registered in Clacks `fleet.json` with `release: null` (changelog only, no release PRs).
+- [x] Claude review prerequisites inherited org-wide.
 
-### Spawned-repo quick checklist
+Left for R-277:
 
-After "Use this template", in the new repo:
-
-> **Run the `initialise-package-repo` skill first.** It automates the setup half of steps 1–3 and
-> 6's Release-enable (in-repo file edits, **shared-skills pull** via `npx skills add … --copy`,
-> `rheged-skills-setup`, the ruleset + `npm-release` environment, and `gh workflow enable Release`),
-> all idempotent and dry-run-first, and verifies-and-reports steps 4–5 and the npm-OIDC bootstrap.
-> **Authoring the real `src/` API stays manual** — the skill never touches `src/`. The numbered
-> steps below are the reference for what it does — walk them by hand only if you're not using the
-> skill. See [`CLAUDE.md` → Agent skills](CLAUDE.md#agent-skills). Committed skill bundles from the
-> template are bootstrap only; the scaffolder refreshes them at pull-on-instantiation (R-776). This
-> template is not a skills-push-fan-out consumer (R-774).
-
-1. **Per-package code edits** — rename `package.json`, point `infrastructure/repo-config.yaml` at
-   the new package, **re-seed `.release-please-manifest.json`** so `"."` matches the starting
-   version (the #1 release-please failure mode), reset `changelog/`, **pull the shared skills**
-   (`npx skills add … --copy`), and generate the skill configs (all automated by the skill).
-   The skill also adapts the inherited [`GLOSSARY.md`](GLOSSARY.md) (new header, template-only
-   terms stripped); add the repo's own domain terms afterwards.
-   **Replace `src/` by hand** with the package's real API. Full steps in
-   [`CLAUDE.md`](CLAUDE.md#repo).
-2. Apply the [repo-level settings](#repo-level-settings) (rulesets are not copied).
-3. Create the [`npm-release` environment](#the-npm-release-environment) — called out as its own
-   step because it needs the `gh api` commands in that subsection, not just a settings toggle.
-4. Onboard the [release-orchestrator](#release-orchestrator-onboarding) — install the bot and add
-   the `matrix.repo` entry.
-5. Verify the [Claude review prerequisites](#claude-review-prerequisites).
-6. Complete the [npm OIDC](#npm-oidc-trusted-publishing) bootstrap, then
-   [enable the Release workflow](#enable-the-release-workflow).
+- [ ] [Bootstrap publish](#npm-oidc-trusted-publishing) and the Trusted Publisher.
+- [ ] Flip the Clacks `fleet.json` entry to `release: "npm"`.
 
 ### Repo-level settings
 
@@ -208,9 +200,9 @@ from publish #2.
 
 ### Enable the Release workflow
 
-The Release workflow (`pkg-release.yml`) is intentionally **disabled on this template repo** (its
-placeholder `src/` is never published). Its workflow **name** is `Release`, so a spawned repo
-enables it by name:
+The Release workflow (`pkg-release.yml`) is **enabled** on this repo (R-275); the `v0.0.0` baseline
+tag keeps it from publishing until R-277. Its workflow **name** is `Release`, so it is toggled by
+name:
 
 ```bash
 gh workflow enable Release

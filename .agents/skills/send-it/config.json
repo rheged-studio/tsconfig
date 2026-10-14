@@ -1,14 +1,7 @@
 {
   "baseBranch": "main",
-  "shippablePaths": [
-    "dist"
-  ],
-  "shippableManifestKeys": [
-    "name",
-    "version",
-    "files",
-    "publishConfig"
-  ],
+  "shippablePaths": ["README.md"],
+  "shippableManifestKeys": ["name", "version", "files", "publishConfig"],
   "changelog": true,
   "triage": true
 }

@@ -1,66 +1,57 @@
 {
-  "name": "@rheged-studio/npm-package-template",
+  "name": "@rheged-studio/tsconfig",
   "version": "0.0.0",
-  "description": "Template repository for Rheged Studio npm packages — rename and fill src/ when generating a new package.",
+  "description": "Shared, layered TypeScript configuration presets for the Rheged Studio estate",
   "keywords": [
-    "template",
-    "npm-package",
+    "tsconfig",
     "typescript",
-    "boilerplate"
+    "typescript-config",
+    "presets",
+    "rheged-studio"
   ],
-  "homepage": "https://github.com/rheged-studio/npm-package-template#readme",
+  "homepage": "https://github.com/rheged-studio/tsconfig#readme",
   "bugs": {
-    "url": "https://github.com/rheged-studio/npm-package-template/issues"
+    "url": "https://github.com/rheged-studio/tsconfig/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rheged-studio/npm-package-template.git"
+    "url": "https://github.com/rheged-studio/tsconfig.git"
   },
   "license": "MIT",
   "author": {
     "name": "Rob Easthope",
     "url": "https://github.com/RobEasthope"
   },
-  "type": "module",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
-    }
+    "./package.json": "./package.json"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "README.md"
   ],
   "scripts": {
     "act:ci": "act pull_request -W .github/workflows/ci.yml --eventpath .github/act-events/pull_request.json",
     "act:list": "act --list",
     "act:release:dry": "act push -W .github/workflows/pkg-release.yml",
-    "build": "tsc",
     "ci:list": "gh run list --limit 10",
     "ci:view": "gh run view",
     "ci:watch": "gh run watch $(gh run list -L 1 --json databaseId -q '.[0].databaseId // empty')",
-    "clean": "rimraf node_modules dist",
+    "clean": "rimraf node_modules",
     "format": "prettier --write .",
-    "lint": "eslint 'src/**/*.ts' --cache --cache-location ./.eslintcache",
-    "lint:fix": "eslint 'src/**/*.ts' --fix --cache --cache-location ./.eslintcache",
+    "lint": "eslint infrastructure/tests --cache --cache-location ./.eslintcache",
+    "lint:fix": "eslint infrastructure/tests --fix --cache --cache-location ./.eslintcache",
     "lint:md": "markdownlint-cli2 '**/*.{md,mdx}' '!**/node_modules/**' '!**/dist/**' '!**/.turbo/**' '!**/.astro/**' '!**/.claude/skills/**' '!**/.agents/skills/**'",
     "lint:md:fix": "markdownlint-cli2 --fix '**/*.{md,mdx}' '!**/node_modules/**' '!**/dist/**' '!**/.turbo/**' '!**/.astro/**' '!**/.claude/skills/**' '!**/.agents/skills/**'",
     "lint:sh": "bash -c 'if command -v shellcheck >/dev/null 2>&1; then shellcheck infrastructure/scripts/*.sh .husky/pre-commit .husky/pre-push .husky/commit-msg; elif [ \"$(uname -s)\" = \"Darwin\" ]; then echo \"⚠️  shellcheck not installed — skipping. Install: brew install shellcheck\"; else echo \"⚠️  shellcheck not installed — skipping. Install: apt-get install shellcheck\"; fi'",
     "lint:workflows": "actionlint",
     "lint:yaml": "yamllint .",
     "prepare": "husky",
-    "prepublishOnly": "pnpm run build",
-    "release:manual": "pnpm run build && npm publish --access public --provenance=false",
-    "release:manual:dry": "pnpm run build && npm publish --access public --provenance=false --dry-run",
+    "release:manual": "npm publish --access public --provenance=false",
+    "release:manual:dry": "npm publish --access public --provenance=false --dry-run",
     "sort-pkg-json": "sort-package-json",
     "test": "vitest run",
     "test:sh": "bash -c 'if command -v bats >/dev/null 2>&1; then bats infrastructure/tests/*.bats; elif [ \"$(uname -s)\" = \"Darwin\" ]; then echo \"⚠️  bats not installed — skipping. Install: brew install bats-core\"; else echo \"⚠️  bats not installed — skipping. Install: apt-get install bats\"; fi'",
     "test:watch": "vitest",
-    "tsc": "tsc --noEmit && tsc -p tsconfig.tools.json",
+    "tsc": "tsc -p tsconfig.tools.json",
     "validate:changelog": "pnpm exec changelog-core validate"
   },
   "lint-staged": {

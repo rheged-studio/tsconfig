@@ -60,10 +60,11 @@ jobs:
       # Directory args, NOT globs: the action runs `eslint $ESLINT_ARGS`
       # word-split with bash globstar OFF, so a `src/**/*.ts` glob would
       # mis-expand. Passing directories lets ESLint's flat config resolve the
-      # file set recursively. infrastructure/scripts is shell-only after
-      # R-808 (changelog TS moved to changelog-core), so lint src only —
-      # ESLint errors if every file under a passed directory is ignored.
-      eslint-args: src
+      # file set recursively. This package is config-only (no src/, R-275), and
+      # infrastructure/scripts is shell-only after R-808 (changelog TS moved to
+      # changelog-core), so lint the infrastructure/tests .mjs only — ESLint
+      # errors if every file under a passed directory is ignored.
+      eslint-args: infrastructure/tests
       # Match the `lint:md` script: include .mdx and the dist/turbo/astro
       # excludes the estate default omits.
       markdown-globs: |
@@ -91,11 +92,12 @@ jobs:
     uses: rheged-studio/shared-workflows/.github/workflows/reusable-build-test.yml@v1
     with:
       node-version-file: ${{ needs.config.outputs.node_version_file }}
-      # Off to preserve current behaviour: CI runs no standalone typecheck today
-      # (the `build` lane = `tsc` type-checks src; the tools/infra pass via
-      # `pnpm tsc`/tsconfig.tools.json is not a CI gate). The reusable lane only
-      # type-checks one tsconfig, so it can't replicate `pnpm tsc`'s two passes.
-      typecheck: false
+      # Config-only package (R-275): there is no src/ → dist/ build to verify,
+      # so the build lane is off. The typecheck lane runs `tsc --noEmit` over
+      # the tooling project instead (the same pass as `pnpm tsc`).
+      build: false
+      typecheck: true
+      tsconfig: tsconfig.tools.json
       # Mirror the `lint:sh` script: the action `find`s *.sh/*.bash under a
       # directory but takes files literally, so pass the scripts dir plus the
       # three extensionless husky hooks explicitly (a `.husky` dir arg would

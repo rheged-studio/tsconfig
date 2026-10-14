@@ -1,16 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "compilerOptions": {
-    "declaration": false,
-    "declarationMap": false,
-    "incremental": false,
-    "noEmit": true,
-    "rootDir": "."
-  },
-  "exclude": ["dist", "node_modules"],
+  "exclude": ["node_modules"],
   "extends": "./tsconfig.json",
   "include": [
-    "src/**/*.ts",
     "infrastructure/scripts/**/*.ts",
     "infrastructure/tests/**/*.ts",
     "vitest.config.ts"

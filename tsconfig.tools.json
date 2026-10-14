@@ -1,13 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "compilerOptions": {
-    "declaration": false,
-    "declarationMap": false,
-    "incremental": false,
-    "noEmit": true,
-    "rootDir": "."
-  },
-  "exclude": ["dist", "node_modules"],
+  "exclude": ["node_modules"],
   "extends": "./tsconfig.json",
   "include": [
     "eslint.config.ts",
