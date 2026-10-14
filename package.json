@@ -1,20 +1,21 @@
 {
-  "name": "@rheged-studio/npm-package-template",
+  "name": "@rheged-studio/tsconfig",
   "version": "0.0.0",
-  "description": "Template repository for Rheged Studio npm packages — rename and fill src/ when generating a new package.",
+  "description": "Shared, layered TypeScript configuration presets for the Rheged Studio estate",
   "keywords": [
-    "template",
-    "npm-package",
+    "tsconfig",
     "typescript",
-    "boilerplate"
+    "typescript-config",
+    "presets",
+    "rheged-studio"
   ],
-  "homepage": "https://github.com/rheged-studio/npm-package-template#readme",
+  "homepage": "https://github.com/rheged-studio/tsconfig#readme",
   "bugs": {
-    "url": "https://github.com/rheged-studio/npm-package-template/issues"
+    "url": "https://github.com/rheged-studio/tsconfig/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rheged-studio/npm-package-template.git"
+    "url": "https://github.com/rheged-studio/tsconfig.git"
   },
   "license": "MIT",
   "author": {
