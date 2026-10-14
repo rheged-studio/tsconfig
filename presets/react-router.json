@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Rheged Studio — React Router",
+  // Framework layer for React Router 7/8 framework mode. Adds the types its
+  // Vite build exposes. `rootDirs` for `.react-router/types`, the `~/*` path
+  // and the `.server`/`.client` globs stay in the consuming project.
+  "extends": "./react.json",
+  "compilerOptions": {
+    "types": ["node", "vite/client"]
+  }
+}

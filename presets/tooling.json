@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Rheged Studio — tooling role",
+  // Role layer for config files (`*.config.ts`) and scripts run by tsx or by
+  // Node's built-in type stripping. tsc only type-checks.
+  "compilerOptions": {
+    // Node's own module rules, as Node will run the file.
+    "module": "nodenext",
+    "noEmit": true,
+    // Only syntax Node can strip: no enums, namespaces or parameter
+    // properties (R-274 D17).
+    "erasableSyntaxOnly": true,
+    // Node type stripping needs real `.ts` specifiers (R-274 D18).
+    "allowImportingTsExtensions": true,
+    // If the files are ever emitted, `./x.ts` becomes `./x.js`.
+    "rewriteRelativeImportExtensions": true
+  }
+}

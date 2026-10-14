@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Rheged Studio — Node library (Node 22)",
+  // npm packages built with tsc: base + node22 + library.
+  "extends": ["./base.json", "./node22.json", "./library.json"]
+}

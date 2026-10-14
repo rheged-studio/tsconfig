@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Rheged Studio — library role",
+  // Role layer for packages published unbundled to npm and built with tsc.
+  // Expects sources in `src/` and emits JavaScript plus declarations to
+  // `dist/`. Every path uses ${configDir}, so it resolves from the consuming
+  // project, not from node_modules.
+  "compilerOptions": {
+    // Node's own module rules, so the emitted .d.ts resolve for every consumer.
+    // `moduleResolution` is implied. Relative imports need `.js` extensions
+    // (R-274 D3).
+    "module": "nodenext",
+    "declaration": true,
+    // Go-to-definition jumps to the .ts source, not the .d.ts.
+    "declarationMap": true,
+    // Exported API must carry explicit types, so declarations can be emitted
+    // per file without type inference (R-274 D19).
+    "isolatedDeclarations": true,
+    // Don't write partial output when type-checking fails (R-2795).
+    "noEmitOnError": true,
+    "rootDir": "${configDir}/src",
+    "outDir": "${configDir}/dist"
+  },
+  "include": ["${configDir}/src"],
+  // Tests are type-checked by the test runner's config, never emitted to dist.
+  "exclude": [
+    "${configDir}/dist",
+    "${configDir}/src/**/*.test.ts",
+    "${configDir}/src/**/*.spec.ts"
+  ]
+}

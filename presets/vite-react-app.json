@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Rheged Studio — Vite + React app",
+  // Vite React SPAs and Storybook: base + dom + app + react.
+  "extends": ["./base.json", "./dom.json", "./app.json", "./react.json"],
+  "compilerOptions": {
+    // Vite's import.meta.env, asset and CSS module declarations.
+    "types": ["vite/client"]
+  }
+}

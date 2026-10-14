@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Rheged Studio — strictest add-on",
+  // Optional last layer: checking flags only, nothing that changes module
+  // resolution or emit. Unused-code checks stay with ESLint (R-274 D4, D14).
+  "compilerOptions": {
+    // `{ a?: string }` rejects an explicit `a: undefined`.
+    "exactOptionalPropertyTypes": true,
+    // Index-signature properties must use bracket access.
+    "noPropertyAccessFromIndexSignature": true,
+    // Every code path in a function that returns a value must return.
+    "noImplicitReturns": true,
+    // Unreachable code and unused labels are errors, not warnings.
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false
+  }
+}

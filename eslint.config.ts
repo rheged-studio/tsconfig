@@ -20,7 +20,11 @@ export default defineConfig([
   // that own their linting upstream, and CI's directory-scoped lint never touches
   // them. Ignore `.agents/**` too, so the two mirrors are treated symmetrically and
   // a newly-added bundle's Node globals don't trip the change-gated preflight.
-  { ignores: [".agents/**"] },
+  //
+  // The preset fixtures are tiny projects type-checked against the presets, and
+  // the negative ones contain deliberate errors; `eslint --fix` (lint-staged)
+  // must never rewrite them. `.fixtures/` is the tests' scratch install.
+  { ignores: [".agents/**", "fixtures/**", ".fixtures/**"] },
   ...base,
   typescript,
   // infrastructure/ holds the workflow/release shell's CLI tooling (not

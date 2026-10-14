@@ -1,0 +1,1 @@
+{ "extends": "@rheged-studio/tsconfig/workers-app" }

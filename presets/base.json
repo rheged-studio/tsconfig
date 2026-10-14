@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Rheged Studio — base",
+  // The first layer of every preset. It owns type-checking strictness and the
+  // module-syntax rules that hold everywhere. It sets no `module`/`lib`: a
+  // runtime layer (node22, node24, dom, workers) and a role layer (library,
+  // app, tooling) supply those. Options TypeScript 6 already defaults
+  // (esModuleInterop, forceConsistentCasingInFileNames, …) are left out.
+  "compilerOptions": {
+    // Every `strict` family check. TS 6 defaults it on; set explicitly so the
+    // preset never depends on a default (R-274 D16).
+    "strict": true,
+    // Index access (`arr[i]`, `record[key]`) includes `undefined` (R-274 D2).
+    "noUncheckedIndexedAccess": true,
+    // Overriding a base-class member needs the `override` keyword (R-274 D2).
+    "noImplicitOverride": true,
+    // A non-empty `case` must `break`, `return` or `throw` (R-274 D16).
+    "noFallthroughCasesInSwitch": true,
+    // Side-effect imports (`import "./x"`) must resolve. CSS imports need an
+    // ambient declaration such as `vite/client`. TS 6 default, set explicitly.
+    "noUncheckedSideEffectImports": true,
+    // Imports and exports are emitted exactly as written: type-only imports
+    // must say `import type`.
+    "verbatimModuleSyntax": true,
+    // Each file must be transpilable on its own (esbuild, swc, type stripping).
+    "isolatedModules": true,
+    // Treat every non-declaration file as a module, never a global script.
+    "moduleDetection": "force",
+    // Don't type-check declaration files from dependencies.
+    "skipLibCheck": true,
+    // Allow `import data from "./data.json"`.
+    "resolveJsonModule": true,
+    // A conservative default; runtime layers set their own.
+    "target": "es2022",
+    // No ambient `@types/*` packages unless a later layer names them. TS 6
+    // default, set explicitly.
+    "types": []
+  }
+}

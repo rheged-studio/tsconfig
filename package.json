@@ -22,10 +22,14 @@
     "name": "Rob Easthope",
     "url": "https://github.com/RobEasthope"
   },
+  "type": "module",
   "exports": {
+    "./*": "./presets/*.json",
+    "./*.json": "./presets/*.json",
     "./package.json": "./package.json"
   },
   "files": [
+    "presets/*.json",
     "README.md"
   ],
   "scripts": {
@@ -82,6 +86,8 @@
     "@rheged-studio/eslint-config": "^1.1.3",
     "@rheged-studio/markdownlint-config": "^3.0.0",
     "@types/node": "^25.6.0",
+    "@types/react": "^19.3.0",
+    "astro": "^7.3.8",
     "bats": "1.13.0",
     "eslint": "^9.0.0",
     "husky": "^9.1.7",
@@ -90,11 +96,22 @@
     "markdownlint-cli2": "^0.18.1",
     "prettier": "^3.0.0",
     "prettier-plugin-tailwindcss": "^0.8.0",
+    "react": "^19.3.0",
     "rimraf": "^6.0.1",
     "sort-package-json": "^3.6.1",
     "tsx": "^4.21.1",
     "typescript": "^6.0.3",
+    "typescript7": "npm:typescript@7.0.2",
+    "vite": "^8.2.2",
     "vitest": "^4.1.6"
+  },
+  "peerDependencies": {
+    "typescript": ">=6"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
   },
   "packageManager": "pnpm@10.33.0",
   "engines": {
