@@ -1,0 +1,17 @@
+{
+  "reviewBots": ["claude", "coderabbitai"],
+  "reviewBotChecks": {},
+  "maxCiRounds": 5,
+  "maxReviewRounds": 2,
+  "replyOnAccept": true,
+  "promoteOnGreen": true,
+  "deferNonBlocking": true,
+  "humanEnvelope": false,
+  "reviewIdleMinutes": 10,
+  "reviewWaitMaxMinutes": 20,
+  "linearTeamName": "",
+  "issueKeys": [],
+  "followUpLabel": "follow-up",
+  "followUpProject": "",
+  "followUpState": "Backlog"
+}

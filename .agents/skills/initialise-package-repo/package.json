@@ -1,0 +1,32 @@
+{
+  "name": "@rheged-studio/skill-initialise-package-repo",
+  "version": "0.5.0",
+  "private": true,
+  "description": "Agent skill: one-shot, idempotent post-generation setup for a repo freshly created from npm-package-template — reset changelog/, re-seed the release-please manifest, rewrite package identity + repo-config, adapt the inherited GLOSSARY.md (A-2441), pull shared skills via npx skills add --copy (A-776), clear the template-seed skill-config gitignore (A-812), wrap rheged-skills-setup, and apply the non-copied GitHub settings (npm-release env, GO/NO GO ruleset, Trunk changelog bypass, enable Release).",
+  "keywords": [
+    "agent-skill",
+    "claude-code",
+    "cursor",
+    "github",
+    "template",
+    "release-please",
+    "bootstrap"
+  ],
+  "homepage": "https://github.com/rheged-studio/npm-package-template/tree/main/.claude/skills/initialise-package-repo#readme",
+  "bugs": {
+    "url": "https://github.com/rheged-studio/npm-package-template/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rheged-studio/npm-package-template.git",
+    "directory": ".claude/skills/initialise-package-repo"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Rob Easthope",
+    "url": "https://github.com/RobEasthope"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

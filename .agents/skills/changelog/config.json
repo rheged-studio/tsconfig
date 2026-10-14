@@ -1,0 +1,8 @@
+{
+  "issueKeys": ["R"],
+  "linearWorkspaceSlug": "rheged-studio",
+  "baseBranch": "main",
+  "changelogDir": "changelog",
+  "fallbackPackage": "infrastructure",
+  "affectedPackages": false
+}

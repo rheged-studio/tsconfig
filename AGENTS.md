@@ -1,0 +1,107 @@
+<!--
+  Managed upstream in rheged-studio/shared-agents-md and vendored into estate repos by
+  Clacks (fanout-agents-md.yml). Do NOT edit this copy — edit the canonical
+  AGENTS.md in shared-agents-md; changes here are overwritten on the next fan-out.
+-->
+
+# Shared agent instructions
+
+Estate-wide guidance for AI coding agents (Claude Code, Cursor, cloud agents) working in the
+**Rheged Studio** estate. Repo-specific guidance lives in each repo's own `CLAUDE.md`, not here —
+only add a rule here if it is true for **every** estate repo.
+
+## Writing
+
+- Use **British English** spelling and grammar in human-facing prose (documentation, ADRs, commit
+  messages, PR titles and bodies): _colour_, _behaviour_, _organise_, _-ise_/_-yse_ over
+  _-ize_/_-yze_, _licence_ (noun) / _license_ (verb).
+- This applies to prose written for humans — **not** to identifiers, dependency or package names,
+  CSS `color`, CLI flags, config keys, environment variable names, or third-party API field
+  names/values that mirror upstream. Leave those spelt as the code or upstream requires.
+- Two named exceptions: Linear's **`Canceled`** state stays US-spelt (it is a fixed API value); and
+  **"trunk"** means the git trunk — LanguageTool / CodeRabbit reads it as a vehicle part and suggests
+  the British "boot"; decline that.
+
+## Estate identity
+
+- The Linear workspace slug is **`rheged-studio`**. It has two teams:
+  - **Rheged Studio** — the parent team, key **`R`**.
+  - **Cadogan** — a sub-team, key **`C`**. It owns tempest, art-engine, gh-staff-next and cadogan.
+- An existing issue always belongs to its own team: resolve states and transitions against that
+  team. A repo's skill config **`linearTeamName`** is the fallback, naming the team for new issues
+  that have no parent issue.
+- Resolve Linear MCP calls by team **name** ("Rheged Studio", "Cadogan"), **not** by key — keys
+  have been renamed repeatedly and older references are stale.
+- Issue IDs are **`R-<number>`** or **`C-<number>`**. Legacy prefixes (`A`, `SK`, `ASW`, `AKW`,
+  `WTF`) still resolve in Linear, but new references always use the issue's current ID.
+- Each repo maps to **one Linear project or one initiative**. Don't split a repo's work across
+  parallel projects outside that initiative.
+- When creating a Linear issue (`save_issue` with no `id`, or the UI), always set `project`. For a
+  repo with a single project, use that project. For a repo with an initiative, resolve the project
+  with `list_projects` filtered to the initiative and pick it by workstream. If the right project is
+  unknown or ambiguous, ask — never file an issue without a project.
+
+## Branches
+
+- Name branches `<linear-id>-<slug>`, lower-cased (e.g. `r-123-lay-out-the-canonical-repo` or
+  `c-12-add-the-upload-form`).
+- **Verify the issue is real and relevant** (via the Linear MCP) before putting its ID in a branch —
+  never fabricate or guess an ID. If no issue exists, use a descriptive branch name **without** an
+  ID prefix.
+- **Branch from `main`**: check out and pull `main` first, then create the branch — not from
+  whatever branch the session happened to start on.
+
+## Linear issue lifecycle
+
+- As soon as a session is tied to a Linear issue ID (the user names it, the branch carries it, or
+  you identify it) — **including Plan mode / planning-only** — set that issue to **In Progress** via
+  the Linear MCP or `/linear-sync`. Do **not** wait for a branch or PR.
+- The transition is idempotent: skip if the issue is already In Progress or further along.
+- Do **not** skip In Progress just because a later PR will advance the status.
+- When a PR opens or updates via `/send-it`, linked issues move to **In Review** (`/send-it` /
+  `/linear-sync` handles this).
+- On merge, Linear's GitHub integration moves issues to **Done** — do **not** set Done manually.
+
+## Commits, PRs & releases
+
+- Commit messages and PR titles follow **Conventional Commits** (`feat:`, `fix:`, `chore:`, …).
+- **Dual merge policy** (ADR 0003 / R-1176): feature / ship PRs use **merge commits**; release-please
+  version PRs and fan-out PRs stay **squash**. Both methods remain allowed (R-1177) — do not disable
+  squash at the repo level.
+- Under merge commits the **bump signal is the Conventional Commits on the branch** (enforced by the
+  commitlint gate), not the PR title. PR titles still follow Conventional Commits for CI and humans;
+  a mistyped commit prefix (not the PR title) is what silently cuts the wrong version bump.
+- Version bump by type: `feat` → minor; `fix` / `perf` / `revert` → patch; `!` or `BREAKING CHANGE:`
+  → major; `chore` / `docs` / `ci` / `build` / `refactor` / `test` / `style` → no release. When a
+  branch spans several levels, the highest-bumping commit type on the branch drives the bump; title
+  the PR to match for readability.
+- Scopes are optional and for readability only — they do **not** drive the bump. Group commits by
+  **intent** (a feature, a fix, a refactor), not by package boundary; never stage unrelated changes
+  into one commit (e.g. via `git add -A`).
+- Leave the Conventional Commits tokens themselves unchanged (`feat`, `BREAKING CHANGE:` are
+  upstream identifiers — see the Writing carve-out).
+- **Ship with `/send-it`.** Open and update PRs through the `/send-it` skill — the estate's
+  canonical ship flow (atomic commits, change-gated preflight, Conventional Commits PR title, push,
+  draft PR → CI fix → promote-on-green → Phase B → human envelope or unattended report). Do **not**
+  bypass it with ad-hoc `gh pr create` or manual PR steps when send-it is installed. Re-run send-it
+  to update an existing PR's title and body. Merge stays human.
+
+## Collaboration guardrails
+
+- **Never push directly to `main`** — always branch and open a PR. `main` is the only protected
+  branch.
+- **Claude is tooling, not a contributor** — don't add a `Co-Authored-By: Claude` trailer; it
+  misrepresents authorship, and estate repos with the `commit-msg` hook strip it anyway.
+- **Bot reviews (CodeRabbit, Claude review) are advisory** — a green bot check is not proof a
+  review actually ran; CI is the gate.
+- **Label mechanical rollout PRs `skip-review`.** When a PR only fans out or re-syncs shared code
+  across the estate — a mechanical rollout with no new behaviour (shared-workflows distributions,
+  `AGENTS.md` fan-outs, agent-skills re-syncs) — add the `skip-review` label so CodeRabbit skips it
+  and the review quota is reserved for the PRs that actually change behaviour.
+- **Never label a behaviour change `skip-review`.** If a PR introduces or alters functionality, leave
+  it unlabelled so it gets reviewed. When unsure, don't label — a forgotten label errs towards _more_
+  review, not less. The `skip-review` label must already exist in the target repo (bootstrapped per
+  the estate rollout config); if it is absent, that is a provisioning gap — flag it rather than
+  shipping the rollout silently reviewed, and leave creating the label to the rollout tooling / repo
+  provisioning.
+- **Leave the merge to the human** — take a PR to green and ready-for-review, but don't merge it.

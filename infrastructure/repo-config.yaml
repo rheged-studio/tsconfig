@@ -1,0 +1,13 @@
+# Non-secret repo policy consumed by CI and Release workflows via
+# Loaded by reusable-load-repo-config.yml@v1 — see CLAUDE.md (R-779).
+#
+# NOTE: Workflow triggers (on.push.branches) cannot reference this file at runtime;
+# keep defaultBranch in sync with branches listed in pkg-release.yml.
+
+defaultBranch: main
+nodeVersionFile: .nvmrc
+npmRegistryUrl: https://registry.npmjs.org
+# Secondary publish target (R-323). GitHub Packages' npm registry; npmScope
+# must equal the owning GitHub org so setup-node scopes .npmrc correctly.
+npmScope: "@rheged-studio"
+githubPackagesRegistryUrl: https://npm.pkg.github.com

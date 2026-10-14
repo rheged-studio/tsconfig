@@ -1,0 +1,22 @@
+name: Validate fanned payload
+
+# VENDORED by the Clacks fan-out (R-738) — do not hand-edit; the
+# next fan-out overwrites it. Calls the estate's shared payload-exercising
+# check; `skills`/`coderabbit` are stamped from this repo's fleet.json install
+# profile. The status context `validate-payload / Validate fanned payload` is
+# pinned REQUIRED in this repo's main ruleset so a broken fanned payload turns
+# `mergeable_state` from `unstable` to `blocked` (the fan-out spine then refuses
+# to merge it).
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate-payload:
+    uses: rheged-studio/shared-workflows/.github/workflows/reusable-validate-payload.yml@v1
+    with:
+      skills: false
+      coderabbit: true

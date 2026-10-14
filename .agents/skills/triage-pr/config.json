@@ -1,0 +1,26 @@
+{
+  "reviewBots": ["claude", "coderabbitai"],
+  "maxCiRounds": 5,
+  "replyOnAccept": true,
+  "promoteOnGreen": true,
+  "deferNonBlocking": true,
+  "humanEnvelope": false,
+  "reviewIdleMinutes": 5,
+  "reviewWaitMaxMinutes": 20,
+  "linearTeamName": "Rheged Studio",
+  "issueKeys": ["R"],
+  "followUpLabel": "follow-up",
+  "followUpProject": "Follow-up issues",
+  "followUpState": "Backlog",
+  "reviewBotChecks": {
+    "claude": {
+      "name": "claude-review",
+      "producer": "github-actions"
+    },
+    "coderabbitai": {
+      "name": "CodeRabbit",
+      "producer": "coderabbitai"
+    }
+  },
+  "maxReviewRounds": 2
+}

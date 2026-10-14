@@ -1,0 +1,32 @@
+{
+  "name": "@rheged-studio/skill-triage-pr",
+  "version": "0.19.0",
+  "private": true,
+  "description": "Agent skill: take a pull request from draft with failing CI to merge-ready — fix in-scope CI failures, then Phase B AI review dispositions (accept / decline / create a follow-up issue) — behind a structured Questions UI human envelope when humanEnvelope is true, or applied unattended with the plan posted on the PR when false.",
+  "keywords": [
+    "agent-skill",
+    "claude-code",
+    "cursor",
+    "github",
+    "pull-request",
+    "ci",
+    "code-review"
+  ],
+  "homepage": "https://github.com/rheged-studio/agent-skills/tree/main/skills/triage-pr#readme",
+  "bugs": {
+    "url": "https://github.com/rheged-studio/agent-skills/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rheged-studio/agent-skills.git",
+    "directory": "skills/triage-pr"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Rob Easthope",
+    "url": "https://github.com/RobEasthope"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
