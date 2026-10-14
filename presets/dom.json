@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Rheged Studio — browser runtime",
+  // Runtime layer for code bundled for the browser. Owns `lib` and `target`.
+  // `dom` includes the iterable DOM types in TS 6, so there is no
+  // `dom.iterable`. The bundler handles any further downlevelling.
+  "compilerOptions": {
+    "lib": ["es2023", "dom"],
+    "target": "es2022"
+  }
+}

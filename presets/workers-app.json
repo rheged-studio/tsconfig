@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Rheged Studio — Cloudflare Workers app",
+  // Workers, Durable Objects and other framework-less Wrangler projects:
+  // base + workers + app.
+  "extends": ["./base.json", "./workers.json", "./app.json"]
+}

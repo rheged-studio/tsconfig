@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Rheged Studio — Cloudflare Workers runtime",
+  // Runtime layer for Cloudflare Workers. No DOM: Workers types come from the
+  // file `wrangler types` generates in the consuming project, which
+  // resolves relative to the project, not this package. Projects using
+  // `nodejs_compat` restate `types` locally to add "node".
+  "compilerOptions": {
+    "lib": ["es2024"],
+    "target": "es2024",
+    "types": ["./worker-configuration.d.ts"]
+  }
+}

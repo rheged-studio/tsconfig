@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Rheged Studio — Astro",
+  // Astro sites: base + dom + app, plus the settings from `astro/tsconfigs/base`
+  // (unchanged from Astro 5 to 7). We copy them rather than extend astro's
+  // file, so this package never has to resolve `astro` (R-274 D13). A CI test
+  // diffs these against astro's file to catch drift.
+  "extends": ["./base.json", "./dom.json", "./app.json"],
+  "compilerOptions": {
+    // Astro processes JSX itself.
+    "jsx": "preserve",
+    // Astro projects may import plain JavaScript.
+    "allowJs": true
+  },
+  "include": ["${configDir}/.astro/types.d.ts", "${configDir}/**/*"],
+  "exclude": ["${configDir}/dist"]
+}

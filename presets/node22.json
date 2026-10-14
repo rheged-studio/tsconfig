@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Rheged Studio — Node 22 runtime",
+  // Runtime layer for Node.js 22. Owns `lib`, `target` and `types`. Pair it
+  // with `@types/node` 22. The lib list matches what Node 22 actually ships
+  // (probed on 22.23): all of ES2024, plus the ES2025 iterator helpers and Set
+  // methods, plus `Array.fromAsync`. It omits Promise.try, RegExp.escape,
+  // Float16Array and DisposableStack, which Node 22 lacks.
+  "compilerOptions": {
+    "lib": ["es2024", "es2025.collection", "es2025.iterator", "esnext.array"],
+    "target": "es2022",
+    "types": ["node"]
+  }
+}

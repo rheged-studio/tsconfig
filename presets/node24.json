@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Rheged Studio — Node 24 runtime",
+  // Runtime layer for Node.js 24. Owns `lib`, `target` and `types`. Pair it
+  // with `@types/node` 24. Node 24 (probed on 24.21) ships all of ES2025, plus
+  // `Error.isError` and `DisposableStack`/`using`. Append it after a Node
+  // combination to move that combination from Node 22 to Node 24:
+  //   "extends": ["@rheged-studio/tsconfig/node-library", "@rheged-studio/tsconfig/node24"]
+  "compilerOptions": {
+    "lib": ["es2025", "esnext.disposable", "esnext.error"],
+    "target": "es2025",
+    "types": ["node"]
+  }
+}

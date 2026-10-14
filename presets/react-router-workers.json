@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Rheged Studio — React Router on Cloudflare Workers",
+  // React Router framework mode deployed to Workers:
+  // base + workers + app + react-router.
+  "extends": [
+    "./base.json",
+    "./workers.json",
+    "./app.json",
+    "./react-router.json"
+  ],
+  "compilerOptions": {
+    // Route modules run on both the Worker and the browser.
+    "lib": ["es2024", "dom"],
+    // Arrays replace rather than merge, so restate the Workers and Vite types.
+    // Add "node" locally for `nodejs_compat`.
+    "types": ["./worker-configuration.d.ts", "vite/client"]
+  }
+}

@@ -27,3 +27,6 @@ coverage/
 
 # preflight skill scratch output (written at the repo root on each run)
 .preflight-summary.json
+
+# preset smoke-test workspace (infrastructure/tests/presets.test.ts)
+.fixtures/

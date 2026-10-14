@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Rheged Studio — app role",
+  // Role layer for bundled applications (Vite, React Router, Astro, Wrangler).
+  // tsc only type-checks; the bundler emits.
+  "compilerOptions": {
+    "module": "esnext",
+    // Resolve the way bundlers do: package `exports`, extensionless relative
+    // imports.
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    // Allow `import "./x.ts"`, which the bundler understands.
+    "allowImportingTsExtensions": true,
+    // Allow declaration files for non-TS imports, such as `*.d.css.ts` (R-2795).
+    "allowArbitraryExtensions": true
+  }
+}

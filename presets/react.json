@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Rheged Studio — React",
+  // Framework layer for React 17+ with the automatic JSX runtime.
+  "compilerOptions": {
+    "jsx": "react-jsx"
+  }
+}
