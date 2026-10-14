@@ -87,14 +87,14 @@ every other kind of repo (R-274 D6).
 The presets are built from five layers. Each layer owns a distinct set of options, so they stack
 without fighting over the same fields.
 
-| Layer        | Presets                              | Owns                                                                       |
-| ------------ | ------------------------------------ | -------------------------------------------------------------------------- |
-| 1. base      | `base`                               | Strictness and the module-syntax rules that hold everywhere                |
-| 2. runtime   | `node22`, `node24`, `dom`, `workers` | `lib`, `target` and `types`: what exists where the code runs               |
-| 3. role      | `library`, `app`, `tooling`          | `module`, module resolution and emit: how the code is built                |
-| 4. framework | `react`, `react-router`              | JSX and the framework's ambient types (`react-router` extends `react`)     |
-| 5. add-on    | `strictest`                          | Extra checking flags only; nothing that changes resolution or emit         |
-| combinations | `node-library`, `node-tooling`, `…`  | A tested array of the layers above, plus any options that must be restated |
+| Layer        | Presets                              | Owns                                                                        |
+| ------------ | ------------------------------------ | --------------------------------------------------------------------------- |
+| 1. base      | `base`                               | Strictness, module-syntax rules, and `target`/`types` defaults (overridden) |
+| 2. runtime   | `node22`, `node24`, `dom`, `workers` | `lib`, `target` and `types`: what exists where the code runs                |
+| 3. role      | `library`, `app`, `tooling`          | `module`, module resolution and emit: how the code is built                 |
+| 4. framework | `react`, `react-router`              | JSX and the framework's ambient types (`react-router` extends `react`)      |
+| 5. add-on    | `strictest`                          | Extra checking flags only; nothing that changes resolution or emit          |
+| combinations | `node-library`, `node-tooling`, `…`  | A tested array of the layers above, plus any options that must be restated  |
 
 Rules worth knowing:
 
@@ -550,8 +550,9 @@ Drop `ignoreDeprecations: "6.0"` at the same time: TypeScript 7 accepts it but i
 ### Setting `types` explicitly
 
 TypeScript 6 defaults `types` to `[]`, so `@types/*` packages are no longer picked up
-automatically. `base` sets `types: []` and each runtime layer names its own globals (`node`,
-`vite/client`, `./worker-configuration.d.ts`). If code relied on another ambient package, list it
+automatically. `base` sets `types: []`. The runtime layers name their own globals (`node`,
+`./worker-configuration.d.ts`), and `react-router`, `vite-react-app` and `react-router-workers` add
+`vite/client`. If code relied on another ambient package, list it
 locally, and restate the preset's entries alongside it, because arrays replace rather than merge:
 
 ```jsonc
