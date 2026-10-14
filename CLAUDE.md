@@ -19,10 +19,11 @@ content lands in **R-276**, and the first publish is **R-277**.
 The repo was spawned from **npm-package-template** and initialised with `/initialise-package-repo`
 (R-275). The template's build leg was stripped to make it config-only. Current state:
 
-- **No presets yet.** `files` is `["README.md"]` and `exports` exposes only `./package.json` until
-  R-276 adds the preset JSONs and the agreed `exports` shape. Update `files`, `exports` and
-  `send-it`'s `shippablePaths` (in `.claude/skills/send-it/config.json` and the `.agents/` mirror)
-  when the presets land.
+- **Presets (R-276).** The v1 presets live in `presets/*.json` (decided on R-274, D1–D24). `files`
+  ships `presets/*.json` + `README.md`; `exports` is the pattern pair (`"./*"` and `"./*.json"` →
+  `./presets/*.json`) plus `./package.json`; `typescript` is an optional peer, `>=6`. `send-it`'s
+  `shippablePaths` (in `.claude/skills/send-it/config.json` and the `.agents/` mirror) lists
+  `presets` and `README.md`.
 - **Publishing is deferred to R-277.** Clacks lists the repo with `release: null`, so it opens no
   release-please PRs and the version stays at `0.0.0`. The `v0.0.0` **baseline tag** matches that
   version, so `pkg-release.yml` (the `Release` workflow, enabled) skips publishing on every push to
@@ -93,18 +94,34 @@ Each shared-bundle skill ships a neutral `config.example.json`. The real `config
 
 ## Source layout
 
-This is a **config-only** package (R-275): there is no `src/` and no build. The published surface
-will be the preset JSON files (R-276); until then `files` is `["README.md"]` and `exports` exposes
-only `./package.json`. The workflow/release shell — `.github/`, `infrastructure/`, `.husky/`,
-`changelog/`, `release-please-config.json`, `.release-please-manifest.json` — is **not** part of the
-published artifact.
+This is a **config-only** package (R-275): there is no `src/` and no build. The published surface is
+the preset JSON files in `presets/` (R-276), each a commented JSONC tsconfig. Layers (`base`,
+`node22`, `node24`, `dom`, `workers`, `library`, `app`, `tooling`, `react`, `react-router`,
+`strictest`) combine through `extends` arrays; the ready-made combinations (`node-library`,
+`node-tooling`, `vite-react-app`, `react-router-workers`, `workers-app`, `astro`) extend sibling
+layers by relative path. Every path in a preset uses `${configDir}`, because a relative path would
+resolve from inside `node_modules`.
+
+`fixtures/` holds one tiny project per combination plus negative projects whose
+`expected-errors.json` lists the error codes they must produce (one list, or one per compiler where
+TS 6 and TS 7 disagree). `infrastructure/tests/presets.test.ts` packs the package, installs the
+tarball into the gitignored `.fixtures/`, and type-checks every fixture under **TS 6.0.3**
+(`typescript`) and **TS 7.0.2** (the `typescript7` alias). It also checks both preset spellings with
+`--showConfig`, that no preset restates a TS 6 default, the `files` list, and that `astro` still
+matches `astro/tsconfigs/base`. `pnpm test` runs it, so CI's `build-test` lane does too. ESLint
+ignores `fixtures/` so `eslint --fix` can't rewrite the deliberate errors.
+
+The workflow/release shell — `.github/`, `infrastructure/`, `.husky/`, `changelog/`,
+`release-please-config.json`, `.release-please-manifest.json` — is **not** part of the published
+artifact.
 
 ## Build / type-check / lint topology
 
 There is no build. Three tsconfigs cover the repo's own tooling (not the shipped presets):
 
-- **`tsconfig.json`** — the shared compiler options, `noEmit`, spanning `eslint.config.ts`,
-  `vitest.config.ts` and any infrastructure `.ts`. Editors resolve against it.
+- **`tsconfig.json`** — dogfoods the package: it extends `./presets/node-tooling.json` (so
+  `"type": "module"` in `package.json`) and spans `eslint.config.ts`, `vitest.config.ts` and any
+  infrastructure `.ts`. Editors resolve against it.
 - **`tsconfig.tools.json`** — `extends ./tsconfig.json` over the same files. `pnpm tsc` runs it, and
   CI's `build-test` typecheck lane runs it (`tsconfig: tsconfig.tools.json`).
 - **`tsconfig.eslint.json`** — the linter's project. `eslint.config.ts` pins
@@ -112,8 +129,8 @@ There is no build. Three tsconfigs cover the repo's own tooling (not the shipped
   ESLint config itself is excluded (the preset's global ignores skip it), so it is type-checked only
   via `tsconfig.tools.json`.
 
-These stay until the package can extend its own presets (R-275). `extends` does **not** inherit
-`include`/`exclude` — only `compilerOptions` — so each config restates its own.
+`extends` does **not** inherit `include`/`exclude` — only `compilerOptions` — so each config restates
+its own.
 
 ## Linting and formatting
 
