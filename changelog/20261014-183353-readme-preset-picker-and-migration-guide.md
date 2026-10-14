@@ -2,10 +2,10 @@
 title: Add the preset picker, layering guide and migration guide to the README
 release_note:
 created_at: "2026-10-14T18:33:53Z"
-merged_at:
+merged_at: "2026-10-14T20:21:30Z"
 branch: r-281-readme-preset-picker-and-migration-guide
-pr:
-commit:
+pr: 3
+commit: f43574e
 author: rob@rheged.studio
 co_authors: []
 category: docs
@@ -14,9 +14,9 @@ issues:
   - R-281
 affected_packages: []
 stats:
-  files_changed:
-  loc_added:
-  loc_removed:
+  files_changed: 2
+  loc_added: 615
+  loc_removed: 8
   commits:
 ---
 
