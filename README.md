@@ -11,9 +11,9 @@ repo.
 }
 ```
 
-> **Status: 0.x, pre-release.** The v1 presets are decided on R-274 and land in R-276; the first
-> npm publish is R-277. The package stays on 0.x until it has proved itself in real repos (R-2793).
-> See [Versioning](#versioning).
+> **Status: 0.x.** The v1 presets (decided on R-274) are in `presets/`; the first npm publish is
+> R-277. The package stays on 0.x until it has proved itself in real repos (R-2793). See
+> [Versioning](#versioning).
 
 - [Install](#install)
 - [Pick a preset](#pick-a-preset)
