@@ -90,7 +90,7 @@ without fighting over the same fields.
 | Layer        | Presets                              | Owns                                                                        |
 | ------------ | ------------------------------------ | --------------------------------------------------------------------------- |
 | 1. base      | `base`                               | Strictness, module-syntax rules, and `target`/`types` defaults (overridden) |
-| 2. runtime   | `node22`, `node24`, `dom`, `workers` | `lib`, `target` and `types`: what exists where the code runs                |
+| 2. runtime   | `node22`, `node24`, `dom`, `workers` | `lib` and `target`, plus `types` in node22, node24 and workers              |
 | 3. role      | `library`, `app`, `tooling`          | `module`, module resolution and emit: how the code is built                 |
 | 4. framework | `react`, `react-router`              | JSX and the framework's ambient types (`react-router` extends `react`)      |
 | 5. add-on    | `strictest`                          | Extra checking flags only; nothing that changes resolution or emit          |
