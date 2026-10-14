@@ -15,7 +15,7 @@ compatibility: >-
   Linear MCP server; if it is unavailable, skip that step silently. The
   filesystem pass needs Node.js ≥22.
 metadata:
-  version: 0.5.0
+  version: 0.5.2
   author: Rob Easthope
 allowed-tools: Read, Bash(git:*), Bash(gh:*), Bash(node:*), mcp__linear-server__get_issue, mcp__linear-server__save_issue, mcp__linear-server__list_issue_statuses
 ---
@@ -40,7 +40,7 @@ match the consuming repo:
 | Key                      | Meaning                                                                                                                                                                                                                                                  | Default           |
 | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
 | `linearTeamName`         | **Fallback** Linear team **name**, used only when an issue's `get_issue` result carries no team — the `Done` state is otherwise resolved against each issue's own team. Use the name, not the key — the key is renamed over time but the name is stable. | `"Rheged Studio"` |
-| `issueKeys`              | Team-key prefixes that may lead a branch name — every team whose issues the repo carries, plus legacy keys (e.g. `["R", "A"]`). The branch issue-ID regex is built from these.                                                                           | `["R", "A"]`      |
+| `issueKeys`              | Team-key prefixes that may lead a branch name — every team whose issues the repo carries (e.g. `["R"]`). The branch issue-ID regex is built from these.                                                                                                  | `["R"]`           |
 | `mainBranch`             | The trunk a branch must be merged into to count as merged — both passes diff against `origin/<mainBranch>`. Set it for repos whose trunk is `master`, `develop`, or similar.                                                                             | `"main"`          |
 | `protectedBranches`      | Branches that are **never** deleted, locally or remotely.                                                                                                                                                                                                | `["main"]`        |
 | `linearWritebackDefault` | Seeds the yes/no default of the Step 10 Linear `Done` writeback prompt — `"yes"` pre-fills yes, `"no"` pre-fills no. The interactive gate always stays; this never auto-applies. Absent or unrecognised → treated as `"no"`.                             | `"no"`            |
@@ -48,8 +48,8 @@ match the consuming repo:
 A branch's issue is its **leading** `<KEY>-<n>` token only. Build the anchored
 regex **deterministically**: escape each key's regex metacharacters, and when
 there is more than one key wrap the alternation in `(?:…)` so the `-\d+` binds to
-all of them — `^(?:R|A)-\d+\b`, never the naive join `^R|A-\d+\b` (which parses
-as `^R` _or_ `A-\d+\b`). A single key needs no wrapper: `^R-\d+\b`. With no keys
+all of them — `^(?:C|R)-\d+\b`, never the naive join `^C|R-\d+\b` (which parses
+as `^C` _or_ `R-\d+\b`). A single key needs no wrapper: `^R-\d+\b`. With no keys
 configured, match nothing. Match it once against the **upper-cased** branch name
 (branches like `r-7-as-acquired` carry the key in lower case), so a slug token
 such as the `-c-2-` in `r-40-add-c-2-support` never resolves to an issue. This
@@ -222,30 +222,30 @@ eyeball them:
 
 ```text
 ## Worktrees to Remove (3)
-- /path/.claude/worktrees/A-7-as-acquired (merged)
-- /path/.claude/worktrees/A-9-button-styling (squash-merged, PR #42)
+- /path/.claude/worktrees/R-7-as-acquired (merged)
+- /path/.claude/worktrees/R-9-button-styling (squash-merged, PR #42)
 - /path/.claude/worktrees/orphan-detached (detached HEAD)
 
 ## Worktrees Skipped — Uncommitted Changes (1)
-- /path/.claude/worktrees/A-12-wip (merged, but `git status` is non-empty;
+- /path/.claude/worktrees/R-12-wip (merged, but `git status` is non-empty;
   remove manually with `git worktree remove --force <path>`)
 
 ## Local Branches to Delete (3)
-- A-7-as-acquired (merged)
-- A-9-button-styling (squash-merged, PR #42 "Fix button styling")
+- R-7-as-acquired (merged)
+- R-9-button-styling (squash-merged, PR #42 "Fix button styling")
 - chore-update-deps (merged)
 
 ## Local Branches Skipped — Tip Ahead of Merged PR (1)
-- A-15-extra-tweaks (squash-merged PR #50, but local tip has commits added after
-  the merge; delete manually with `git branch -D A-15-extra-tweaks` if they're
+- R-15-extra-tweaks (squash-merged PR #50, but local tip has commits added after
+  the merge; delete manually with `git branch -D R-15-extra-tweaks` if they're
   disposable)
 
 ## Remote Branches to Delete (2)
-- A-7-as-acquired
-- A-9-button-styling
+- R-7-as-acquired
+- R-9-button-styling
 
 ## Linear Issues Still Open (1)
-- A-9 "Button styling" — currently In Review (branch: A-9-button-styling)
+- R-9 "Button styling" — currently In Review (branch: R-9-button-styling)
 
 ## Empty Directories to Remove (1)
 - /path/.claude/worktrees   (predicted: empty once the worktrees above are removed)

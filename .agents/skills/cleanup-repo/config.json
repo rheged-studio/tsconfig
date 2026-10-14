@@ -2,5 +2,6 @@
   "linearTeamName": "Rheged Studio",
   "issueKeys": ["R"],
   "mainBranch": "main",
-  "protectedBranches": ["main"]
+  "protectedBranches": ["main"],
+  "linearWritebackDefault": "no"
 }

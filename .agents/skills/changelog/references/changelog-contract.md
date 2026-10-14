@@ -22,7 +22,7 @@ author: "you@example.com"
 co_authors: []
 category: feature
 breaking: false
-issues: ["A-123"]
+issues: ["R-123"]
 affected_packages: []
 stats:
   files_changed:
@@ -41,22 +41,22 @@ omitted or left as a blank placeholder until enrichment.
 
 ## Field types and rules
 
-| Field | Rule |
-| ----- | ---- |
-| `title` | Non-empty string. |
-| `release_note` | String or `null`/blank when present. |
-| `created_at` | ISO 8601 UTC with `Z` suffix, quoted. **Set once; never overwritten.** |
-| `merged_at` | ISO 8601 UTC with `Z` suffix when set; blank until release. |
-| `branch` | Non-empty string — the stable lookup key for enrichment. |
-| `pr` | Integer when set; blank until post-merge enrichment resolves it from the merged PR. |
-| `commit` | 7-char hex SHA when set; blank until merge. Post-merge enrichment stores the short form of the merged PR's **`mergeCommit.oid`** — the commit that landed on trunk. For a **merge merge** that is the two-parent merge commit; for **squash** it is the squash commit SHA (not necessarily the feature-branch tip). |
-| `author` | Non-empty string (an email). |
-| `co_authors` | Array of strings (`[]` when none). |
-| `category` | One of `feature`, `fix`, `chore`, `docs`, `refactor`, `perf`. |
-| `breaking` | Boolean. If `true`, the body MUST contain a `## Breaking` section. |
-| `issues` | Array of strings, each matching `[A-Z]+-\d+` (a one-or-more-letter team key, e.g. `A-123`). |
-| `affected_packages` | Array of strings (`[]` when unpopulated). Monorepo-gated — emitted only when `affectedPackages: true` in `config.json`; absent (and clean) for single-package repos. |
-| `stats.{files_changed,loc_added,loc_removed,commits}` | Non-negative integers when set; blank until release. `commits` counts the PR's branch commits **excluding merge commits**, filled by post-merge enrichment. |
+| Field                                                 | Rule                                                                                                                                                                                                                                                                                                                |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `title`                                               | Non-empty string.                                                                                                                                                                                                                                                                                                   |
+| `release_note`                                        | String or `null`/blank when present.                                                                                                                                                                                                                                                                                |
+| `created_at`                                          | ISO 8601 UTC with `Z` suffix, quoted. **Set once; never overwritten.**                                                                                                                                                                                                                                              |
+| `merged_at`                                           | ISO 8601 UTC with `Z` suffix when set; blank until release.                                                                                                                                                                                                                                                         |
+| `branch`                                              | Non-empty string — the stable lookup key for enrichment.                                                                                                                                                                                                                                                            |
+| `pr`                                                  | Integer when set; blank until post-merge enrichment resolves it from the merged PR.                                                                                                                                                                                                                                 |
+| `commit`                                              | 7-char hex SHA when set; blank until merge. Post-merge enrichment stores the short form of the merged PR's **`mergeCommit.oid`** — the commit that landed on trunk. For a **merge merge** that is the two-parent merge commit; for **squash** it is the squash commit SHA (not necessarily the feature-branch tip). |
+| `author`                                              | Non-empty string (an email).                                                                                                                                                                                                                                                                                        |
+| `co_authors`                                          | Array of strings (`[]` when none).                                                                                                                                                                                                                                                                                  |
+| `category`                                            | One of `feature`, `fix`, `chore`, `docs`, `refactor`, `perf`.                                                                                                                                                                                                                                                       |
+| `breaking`                                            | Boolean. If `true`, the body MUST contain a `## Breaking` section.                                                                                                                                                                                                                                                  |
+| `issues`                                              | Array of strings, each matching `[A-Z]+-\d+` (a one-or-more-letter team key, e.g. `R-123`).                                                                                                                                                                                                                         |
+| `affected_packages`                                   | Array of strings (`[]` when unpopulated). Monorepo-gated — emitted only when `affectedPackages: true` in `config.json`; absent (and clean) for single-package repos.                                                                                                                                                |
+| `stats.{files_changed,loc_added,loc_removed,commits}` | Non-negative integers when set; blank until release. `commits` counts the PR's branch commits **excluding merge commits**, filled by post-merge enrichment.                                                                                                                                                         |
 
 The filename must match `YYYYMMDD-HHMMSS-<slug>.md` (slug `[a-z0-9-]+`), and the
 body must contain at least one of `## Breaking` / `## Added` / `## Changed` /
@@ -81,7 +81,7 @@ Three owners, never overlapping:
    used for the other post-merge fields) — the ship flow never writes it. This runs
    from `@rheged-studio/changelog-core`, invoked in-repo by the shared
    `reusable-changelog-enrich.yml` and written back as `road-runner-bot[bot]` — no
-   central orchestrator or cron (A-801). npm targets use `mode: finalise` (fills the
+   central orchestrator or cron (R-801). npm targets use `mode: finalise` (fills the
    fields **and** stamps `version`); deploy targets, never checked out during the
    release flow, use `mode: enrich` (same fields minus `version`, which the target's
    own tag flow owns, and minus `commits`, which the enrich path doesn't resolve).
