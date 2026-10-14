@@ -1,21 +1,22 @@
 ---
-title: "Scaffold the config-only @rheged-studio/tsconfig repo"
+title: Scaffold the config-only @rheged-studio/tsconfig repo
 release_note:
 created_at: "2026-10-14T16:16:27Z"
-merged_at:
-branch: "r-275-scaffold-rheged-studiotsconfig-from-npm-package-template"
-pr:
-commit:
-author: "rob@rheged.studio"
+merged_at: "2026-10-14T16:40:14Z"
+branch: r-275-scaffold-rheged-studiotsconfig-from-npm-package-template
+pr: 1
+commit: b54f564
+author: rob@rheged.studio
 co_authors: []
 category: chore
 breaking: false
-issues: ["R-275"]
+issues:
+  - R-275
 affected_packages: []
 stats:
-  files_changed:
-  loc_added:
-  loc_removed:
+  files_changed: 194
+  loc_added: 844
+  loc_removed: 2197
   commits:
 ---
 
