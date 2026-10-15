@@ -2,10 +2,10 @@
 title: Harden the preset tests and refresh stale docs
 release_note:
 created_at: "2026-10-15T10:49:03Z"
-merged_at:
+merged_at: "2026-10-15T12:24:48Z"
 branch: r-2817-harden-preset-tests-and-refresh-stale-docs
-pr:
-commit:
+pr: 6
+commit: 7fe6ff6
 author: rob@rheged.studio
 co_authors: []
 category: docs
@@ -14,9 +14,9 @@ issues:
   - R-2817
 affected_packages: []
 stats:
-  files_changed:
-  loc_added:
-  loc_removed:
+  files_changed: 16
+  loc_added: 597
+  loc_removed: 88
   commits:
 ---
 
