@@ -10,17 +10,25 @@
  *
  * Fixtures run without `--noEmit`: every role except `library` sets `noEmit`
  * itself, and `library` must really emit, because `isolatedDeclarations`
- * errors only appear during declaration emit. Output lands in `.fixtures/`.
+ * errors only appear during declaration emit. Each compiler gets its own copy
+ * of the fixtures under `.fixtures/<compiler>/`, so the two never write the
+ * same `dist/` while the tests run concurrently.
  *
  * - `fixtures/<name>/` without `expected-errors.json` must type-check cleanly.
- * - `fixtures/<name>/` with `expected-errors.json` must report exactly those
- *   error codes, proving the layer really rejects what it should. The file
- *   holds one list, or `{ "TS 6": [...], "TS 7": [...] }` where the compilers
- *   disagree on a code.
+ * - `fixtures/<name>/` with `expected-errors.json` must fail with exactly those
+ *   error codes, one entry per error (a code repeats when it fires twice),
+ *   proving the layer really rejects what it should. The file holds one list,
+ *   or `{ "TS 6": [...], "TS 7": [...] }` where the compilers disagree on a
+ *   code.
  * - Every preset resolves under both spellings (`pkg/x` and `pkg/x.json`) and
  *   prints the same `--showConfig`.
+ * - Every preset's resolved `compilerOptions` match between TS 6 and TS 7 and
+ *   match the committed snapshot, so any change to what a preset resolves to
+ *   shows up in review.
+ * - `library` emits JavaScript, declarations and declaration maps, and no
+ *   test files.
  */
-import { execFileSync, spawnSync } from "node:child_process";
+import { execFile, execFileSync } from "node:child_process";
 import {
   cpSync,
   existsSync,
@@ -31,6 +39,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { join, resolve } from "node:path";
+import { promisify } from "node:util";
 import ts from "typescript";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -41,8 +50,8 @@ const workDirectory = join(repoRoot, ".fixtures");
 const packageName = "@rheged-studio/tsconfig";
 
 const compilers = [
-  ["TS 6", join(repoRoot, "node_modules/typescript/bin/tsc")],
-  ["TS 7", join(repoRoot, "node_modules/typescript7/bin/tsc")],
+  ["TS 6", join(repoRoot, "node_modules/typescript/bin/tsc"), "ts6"],
+  ["TS 7", join(repoRoot, "node_modules/typescript7/bin/tsc"), "ts7"],
 ] as const;
 
 /**
@@ -55,6 +64,11 @@ const ts6Defaults = [
   "libReplacement",
   "useDefineForClassFields",
 ];
+
+/**
+ * Lib entries TypeScript 6 folds into another lib, leaving an empty stub.
+ */
+const ts6StubLibs = ["dom.iterable", "dom.asynciterable"];
 
 const presetNames = readdirSync(presetsDirectory)
   .filter((file) => file.endsWith(".json"))
@@ -74,19 +88,58 @@ type TscResult = {
   status: null | number;
 };
 
-function runTsc(tsc: string, cwd: string, args: string[]): TscResult {
-  const result = spawnSync(process.execPath, [tsc, ...args], {
-    cwd,
-    encoding: "utf8",
-  });
-  return { output: result.stdout + result.stderr, status: result.status };
+const execFileAsync = promisify(execFile);
+
+/**
+ * Runs tsc without blocking, so `it.concurrent` tests really overlap.
+ */
+async function runTsc(
+  tsc: string,
+  cwd: string,
+  args: string[],
+): Promise<TscResult> {
+  try {
+    const { stderr, stdout } = await execFileAsync(
+      process.execPath,
+      [tsc, ...args],
+      { cwd, encoding: "utf8" },
+    );
+    return { output: stdout + stderr, status: 0 };
+  } catch (error) {
+    const { code, stderr, stdout } = error as {
+      code?: unknown;
+      stderr?: string;
+      stdout?: string;
+    };
+    if (typeof code !== "number") {
+      throw error;
+    }
+
+    return { output: (stdout ?? "") + (stderr ?? ""), status: code };
+  }
 }
 
+/**
+ * Every reported error code, sorted, with repeats kept: a fixture expecting
+ * two TS2550 errors fails if only one still fires.
+ */
 function errorCodes(output: string): string[] {
-  const codes = [...output.matchAll(/error (TS\d+)/g)].flatMap(
-    (match) => match[1] ?? [],
+  return [...output.matchAll(/error (TS\d+)/g)]
+    .flatMap((match) => match[1] ?? [])
+    .toSorted();
+}
+
+/**
+ * The `compilerOptions` that `tsc --showConfig` printed, with sorted keys:
+ * TS 6 and TS 7 print the same options in a different order.
+ */
+function resolvedOptions(showConfig: string): Record<string, unknown> {
+  const options = compilerOptionsOf(
+    JSON.parse(showConfig) as Record<string, unknown>,
   );
-  return [...new Set(codes)].toSorted();
+  return Object.fromEntries(
+    Object.entries(options).toSorted(([a], [b]) => a.localeCompare(b)),
+  );
 }
 
 function readJsonc(path: string): Record<string, unknown> {
@@ -146,10 +199,20 @@ let packedFiles: string[] = [];
 
 beforeAll(() => {
   packedFiles = installPackedTarball();
-  for (const name of fixtureNames) {
-    cpSync(join(fixturesDirectory, name), join(workDirectory, name), {
-      recursive: true,
-    });
+  for (const [, , directory] of compilers) {
+    for (const name of fixtureNames) {
+      cpSync(
+        join(fixturesDirectory, name),
+        join(workDirectory, directory, name),
+        { recursive: true },
+      );
+    }
+
+    cpSync(
+      join(fixturesDirectory, "node-library"),
+      join(workDirectory, directory, "library-emit"),
+      { recursive: true },
+    );
   }
 
   // One project per preset and spelling for the --showConfig checks. Each
@@ -204,9 +267,9 @@ describe("preset source", () => {
       Object.keys(options).filter((key) => ts6Defaults.includes(key)),
     ).toEqual([]);
     const library = (options["lib"] ?? []) as string[];
-    expect(library.map((entry) => entry.toLowerCase())).not.toContain(
-      "dom.iterable",
-    );
+    expect(
+      library.filter((entry) => ts6StubLibs.includes(entry.toLowerCase())),
+    ).toEqual([]);
   });
 
   it("astro matches astro/tsconfigs/base apart from deliberate differences", () => {
@@ -244,19 +307,25 @@ describe("preset source", () => {
   });
 });
 
-describe.each(compilers)("%s", (label, tsc) => {
-  it.concurrent.each(positiveFixtures)("fixture %s type-checks", (name) => {
-    const { output, status } = runTsc(tsc, join(workDirectory, name), [
-      "-p",
-      ".",
-    ]);
-    expect(output).toBe("");
-    expect(status).toBe(0);
-  });
+// Concurrent tests assert through their own context `expect` (named `check`
+// here), so a failure is reported against the right test.
+describe.each(compilers)("%s", (label, tsc, directory) => {
+  it.concurrent.for(positiveFixtures)(
+    "fixture %s type-checks",
+    async (name, { expect: check }) => {
+      const { output, status } = await runTsc(
+        tsc,
+        join(workDirectory, directory, name),
+        ["-p", "."],
+      );
+      check(output).toBe("");
+      check(status).toBe(0);
+    },
+  );
 
-  it.concurrent.each(negativeFixtures)(
-    "fixture %s reports exactly its expected errors",
-    (name) => {
+  it.concurrent.for(negativeFixtures)(
+    "fixture %s fails with exactly its expected errors",
+    async (name, { expect: check }) => {
       // Either one list for both compilers, or one list per compiler where
       // TS 6 and TS 7 report the same problem under different codes.
       const spec = JSON.parse(
@@ -266,31 +335,76 @@ describe.each(compilers)("%s", (label, tsc) => {
         ),
       ) as Record<string, string[]> | string[];
       const expected = Array.isArray(spec) ? spec : (spec[label] ?? []);
-      const { output } = runTsc(tsc, join(workDirectory, name), [
-        "-p",
-        ".",
-        "--pretty",
-        "false",
-      ]);
-      expect(errorCodes(output)).toEqual(expected.toSorted());
+      const { output, status } = await runTsc(
+        tsc,
+        join(workDirectory, directory, name),
+        ["-p", ".", "--pretty", "false"],
+      );
+      check(errorCodes(output)).toEqual(expected.toSorted());
+      check(status).not.toBe(0);
     },
   );
 
-  it.concurrent.each(presetNames)(
+  it.concurrent(
+    "library emits JavaScript, declarations and maps, but no tests",
+    async ({ expect: check }) => {
+      const project = join(workDirectory, directory, "library-emit");
+      const { output, status } = await runTsc(tsc, project, ["-p", "."]);
+      check(output).toBe("");
+      check(status).toBe(0);
+      check(
+        readdirSync(join(project, "dist"), { recursive: true })
+          .map(String)
+          .toSorted(),
+      ).toEqual([
+        "greet.d.ts",
+        "greet.d.ts.map",
+        "greet.js",
+        "index.d.ts",
+        "index.d.ts.map",
+        "index.js",
+      ]);
+    },
+  );
+
+  it.concurrent.for(presetNames)(
     "%s resolves under both spellings with the same config",
-    (name) => {
-      const [bare, json] = ["bare", "json"].map((suffix) =>
-        runTsc(tsc, join(workDirectory, "show-config", name, suffix), [
-          "-p",
-          ".",
-          "--showConfig",
-        ]),
+    async (name, { expect: check }) => {
+      const [bare, json] = await Promise.all(
+        ["bare", "json"].map((suffix) =>
+          runTsc(tsc, join(workDirectory, "show-config", name, suffix), [
+            "-p",
+            ".",
+            "--showConfig",
+          ]),
+        ),
       );
-      expect(bare?.status).toBe(0);
-      expect(json?.status).toBe(0);
-      expect(bare?.output.replaceAll("/bare/", "/x/")).toBe(
+      check(bare?.status).toBe(0);
+      check(json?.status).toBe(0);
+      check(bare?.output.replaceAll("/bare/", "/x/")).toBe(
         json?.output.replaceAll("/json/", "/x/"),
       );
+    },
+  );
+});
+
+describe("resolved options", () => {
+  it.concurrent.for(presetNames)(
+    "%s resolves to the same options under TS 6 and TS 7, as snapshotted",
+    async (name, { expect: check }) => {
+      const [ts6, ts7] = await Promise.all(
+        compilers.map(async ([, tsc]) => {
+          const { output, status } = await runTsc(
+            tsc,
+            join(workDirectory, "show-config", name, "bare"),
+            ["-p", ".", "--showConfig"],
+          );
+          check(status).toBe(0);
+          return resolvedOptions(output);
+        }),
+      );
+      check(ts7).toEqual(ts6);
+      check(ts6).toMatchSnapshot();
     },
   );
 });

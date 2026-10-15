@@ -1,0 +1,315 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`resolved options > app resolves to the same options under TS 6 and TS 7, as snapshotted 1`] = `
+{
+  "allowArbitraryExtensions": true,
+  "allowImportingTsExtensions": true,
+  "module": "esnext",
+  "moduleResolution": "bundler",
+  "noEmit": true,
+}
+`;
+
+exports[`resolved options > astro resolves to the same options under TS 6 and TS 7, as snapshotted 1`] = `
+{
+  "allowArbitraryExtensions": true,
+  "allowImportingTsExtensions": true,
+  "allowJs": true,
+  "isolatedModules": true,
+  "jsx": "preserve",
+  "lib": [
+    "es2023",
+    "dom",
+  ],
+  "module": "esnext",
+  "moduleDetection": "force",
+  "moduleResolution": "bundler",
+  "noEmit": true,
+  "noFallthroughCasesInSwitch": true,
+  "noImplicitOverride": true,
+  "noUncheckedIndexedAccess": true,
+  "noUncheckedSideEffectImports": true,
+  "preserveConstEnums": true,
+  "resolveJsonModule": true,
+  "skipLibCheck": true,
+  "strict": true,
+  "target": "es2022",
+  "types": [],
+  "verbatimModuleSyntax": true,
+}
+`;
+
+exports[`resolved options > base resolves to the same options under TS 6 and TS 7, as snapshotted 1`] = `
+{
+  "isolatedModules": true,
+  "moduleDetection": "force",
+  "noFallthroughCasesInSwitch": true,
+  "noImplicitOverride": true,
+  "noUncheckedIndexedAccess": true,
+  "noUncheckedSideEffectImports": true,
+  "preserveConstEnums": true,
+  "resolveJsonModule": true,
+  "skipLibCheck": true,
+  "strict": true,
+  "target": "es2022",
+  "types": [],
+  "verbatimModuleSyntax": true,
+}
+`;
+
+exports[`resolved options > dom resolves to the same options under TS 6 and TS 7, as snapshotted 1`] = `
+{
+  "lib": [
+    "es2023",
+    "dom",
+  ],
+  "target": "es2022",
+}
+`;
+
+exports[`resolved options > library resolves to the same options under TS 6 and TS 7, as snapshotted 1`] = `
+{
+  "declaration": true,
+  "declarationMap": true,
+  "isolatedDeclarations": true,
+  "module": "nodenext",
+  "moduleDetection": "force",
+  "moduleResolution": "nodenext",
+  "noEmitOnError": true,
+  "outDir": "./dist",
+  "rootDir": "./src",
+}
+`;
+
+exports[`resolved options > node-library resolves to the same options under TS 6 and TS 7, as snapshotted 1`] = `
+{
+  "declaration": true,
+  "declarationMap": true,
+  "isolatedDeclarations": true,
+  "isolatedModules": true,
+  "lib": [
+    "es2024",
+    "es2025.collection",
+    "es2025.iterator",
+    "esnext.array",
+  ],
+  "module": "nodenext",
+  "moduleDetection": "force",
+  "moduleResolution": "nodenext",
+  "noEmitOnError": true,
+  "noFallthroughCasesInSwitch": true,
+  "noImplicitOverride": true,
+  "noUncheckedIndexedAccess": true,
+  "noUncheckedSideEffectImports": true,
+  "outDir": "./dist",
+  "preserveConstEnums": true,
+  "resolveJsonModule": true,
+  "rootDir": "./src",
+  "skipLibCheck": true,
+  "strict": true,
+  "target": "es2024",
+  "types": [
+    "node",
+  ],
+  "verbatimModuleSyntax": true,
+}
+`;
+
+exports[`resolved options > node-tooling resolves to the same options under TS 6 and TS 7, as snapshotted 1`] = `
+{
+  "allowImportingTsExtensions": true,
+  "erasableSyntaxOnly": true,
+  "isolatedModules": true,
+  "lib": [
+    "es2024",
+    "es2025.collection",
+    "es2025.iterator",
+    "esnext.array",
+  ],
+  "module": "nodenext",
+  "moduleDetection": "force",
+  "moduleResolution": "nodenext",
+  "noEmit": true,
+  "noFallthroughCasesInSwitch": true,
+  "noImplicitOverride": true,
+  "noUncheckedIndexedAccess": true,
+  "noUncheckedSideEffectImports": true,
+  "preserveConstEnums": true,
+  "resolveJsonModule": true,
+  "rewriteRelativeImportExtensions": true,
+  "skipLibCheck": true,
+  "strict": true,
+  "target": "es2024",
+  "types": [
+    "node",
+  ],
+  "verbatimModuleSyntax": true,
+}
+`;
+
+exports[`resolved options > node22 resolves to the same options under TS 6 and TS 7, as snapshotted 1`] = `
+{
+  "lib": [
+    "es2024",
+    "es2025.collection",
+    "es2025.iterator",
+    "esnext.array",
+  ],
+  "target": "es2024",
+  "types": [
+    "node",
+  ],
+}
+`;
+
+exports[`resolved options > node24 resolves to the same options under TS 6 and TS 7, as snapshotted 1`] = `
+{
+  "lib": [
+    "es2025",
+    "esnext.disposable",
+    "esnext.error",
+  ],
+  "target": "es2025",
+  "types": [
+    "node",
+  ],
+}
+`;
+
+exports[`resolved options > react resolves to the same options under TS 6 and TS 7, as snapshotted 1`] = `
+{
+  "jsx": "react-jsx",
+}
+`;
+
+exports[`resolved options > react-router resolves to the same options under TS 6 and TS 7, as snapshotted 1`] = `
+{
+  "jsx": "react-jsx",
+  "types": [
+    "vite/client",
+  ],
+}
+`;
+
+exports[`resolved options > react-router-workers resolves to the same options under TS 6 and TS 7, as snapshotted 1`] = `
+{
+  "allowArbitraryExtensions": true,
+  "allowImportingTsExtensions": true,
+  "isolatedModules": true,
+  "jsx": "react-jsx",
+  "lib": [
+    "es2024",
+    "dom",
+  ],
+  "module": "esnext",
+  "moduleDetection": "force",
+  "moduleResolution": "bundler",
+  "noEmit": true,
+  "noFallthroughCasesInSwitch": true,
+  "noImplicitOverride": true,
+  "noUncheckedIndexedAccess": true,
+  "noUncheckedSideEffectImports": true,
+  "preserveConstEnums": true,
+  "resolveJsonModule": true,
+  "skipLibCheck": true,
+  "strict": true,
+  "target": "es2024",
+  "types": [
+    "./worker-configuration.d.ts",
+    "vite/client",
+  ],
+  "verbatimModuleSyntax": true,
+}
+`;
+
+exports[`resolved options > strictest resolves to the same options under TS 6 and TS 7, as snapshotted 1`] = `
+{
+  "allowUnreachableCode": false,
+  "allowUnusedLabels": false,
+  "exactOptionalPropertyTypes": true,
+  "noImplicitReturns": true,
+  "noPropertyAccessFromIndexSignature": true,
+}
+`;
+
+exports[`resolved options > tooling resolves to the same options under TS 6 and TS 7, as snapshotted 1`] = `
+{
+  "allowImportingTsExtensions": true,
+  "erasableSyntaxOnly": true,
+  "module": "nodenext",
+  "moduleDetection": "force",
+  "moduleResolution": "nodenext",
+  "noEmit": true,
+  "rewriteRelativeImportExtensions": true,
+}
+`;
+
+exports[`resolved options > vite-react-app resolves to the same options under TS 6 and TS 7, as snapshotted 1`] = `
+{
+  "allowArbitraryExtensions": true,
+  "allowImportingTsExtensions": true,
+  "isolatedModules": true,
+  "jsx": "react-jsx",
+  "lib": [
+    "es2023",
+    "dom",
+  ],
+  "module": "esnext",
+  "moduleDetection": "force",
+  "moduleResolution": "bundler",
+  "noEmit": true,
+  "noFallthroughCasesInSwitch": true,
+  "noImplicitOverride": true,
+  "noUncheckedIndexedAccess": true,
+  "noUncheckedSideEffectImports": true,
+  "preserveConstEnums": true,
+  "resolveJsonModule": true,
+  "skipLibCheck": true,
+  "strict": true,
+  "target": "es2022",
+  "types": [
+    "vite/client",
+  ],
+  "verbatimModuleSyntax": true,
+}
+`;
+
+exports[`resolved options > workers resolves to the same options under TS 6 and TS 7, as snapshotted 1`] = `
+{
+  "lib": [
+    "es2024",
+  ],
+  "target": "es2024",
+  "types": [
+    "./worker-configuration.d.ts",
+  ],
+}
+`;
+
+exports[`resolved options > workers-app resolves to the same options under TS 6 and TS 7, as snapshotted 1`] = `
+{
+  "allowArbitraryExtensions": true,
+  "allowImportingTsExtensions": true,
+  "isolatedModules": true,
+  "lib": [
+    "es2024",
+  ],
+  "module": "esnext",
+  "moduleDetection": "force",
+  "moduleResolution": "bundler",
+  "noEmit": true,
+  "noFallthroughCasesInSwitch": true,
+  "noImplicitOverride": true,
+  "noUncheckedIndexedAccess": true,
+  "noUncheckedSideEffectImports": true,
+  "preserveConstEnums": true,
+  "resolveJsonModule": true,
+  "skipLibCheck": true,
+  "strict": true,
+  "target": "es2024",
+  "types": [
+    "./worker-configuration.d.ts",
+  ],
+  "verbatimModuleSyntax": true,
+}
+`;

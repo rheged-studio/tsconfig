@@ -1,0 +1,7 @@
+{
+  "extends": [
+    "@rheged-studio/tsconfig/node-tooling",
+    "@rheged-studio/tsconfig/node24",
+    "@rheged-studio/tsconfig/strictest"
+  ]
+}

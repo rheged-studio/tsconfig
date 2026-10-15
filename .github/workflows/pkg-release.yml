@@ -14,10 +14,9 @@
 # subject to repository + workflow filename, so a generated repo configures its
 # Trusted Publisher against `pkg-release.yml` (see README.md, "npm OIDC").
 #
-# DISABLED on this template repo (`gh workflow disable Release`): the template's
-# src/ is a placeholder that is never published, so a live publish would fail on
-# every push to main. A generated repo re-enables it (`gh workflow enable Release`)
-# — see the generation checklist in CLAUDE.md.
+# ENABLED on this repo. 0.1.0 was bootstrap-published by hand (R-277); from then
+# on, a release-please PR merge bumps the version and this workflow publishes it
+# through OIDC. Feature merges leave the version tagged, so they no-op.
 name: Release
 
 on:
@@ -72,12 +71,9 @@ jobs:
       attestations: write # Upload the GitHub-native build-provenance attestation.
 
   # Post-merge changelog enrich / finalise via changelog-core (R-808 / R-821).
-  # Pin at R-821 merge SHA (shared-workflows#65) until @v1 moves.
   # secrets: inherit passes ROADRUNNER_PRIVATE_KEY for the App-token write-back.
   # Runs independently of `release` — both read the bumped version from the
   # committed package.json; no publish artifact is needed.
-  # Dormant on this template while Release is disabled; generated packages
-  # inherit the job when they enable Release.
   changelog-enrich:
     uses: rheged-studio/shared-workflows/.github/workflows/reusable-changelog-enrich.yml@v1
     with:
