@@ -25,6 +25,16 @@ updates:
     groups:
       npm:
         patterns: ["*"]
+    # The presets are tested under TS 6 (`typescript`) and TS 7 (the
+    # `typescript7` alias). A grouped major bump of `typescript` would quietly
+    # make both legs TS 7 while CI stays green. `@types/node` majors follow
+    # Node majors, so they move alongside the runtime layers. Bump either
+    # major by hand, on purpose.
+    ignore:
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     # `chore` (not `ci`) so subjects read `chore(deps): …` / `chore(deps-dev): …`
     # — Conventional, and a no-release type under the release-please bump rules,
     # so a dependency bump never cuts a version on its own. Both prefixes are
