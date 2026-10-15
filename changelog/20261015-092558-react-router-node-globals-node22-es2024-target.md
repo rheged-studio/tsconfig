@@ -2,10 +2,10 @@
 title: Drop Node globals from react-router, target es2024 on node22, guard pre-1.0 bumps
 release_note: The react-router layer no longer adds Node types, node22 presets target ES2024, and library builds exclude every kind of test and benchmark file.
 created_at: "2026-10-15T09:25:58Z"
-merged_at:
+merged_at: "2026-10-15T10:48:36Z"
 branch: r-2816-fix-react-router-types-node22-target-and-library-excludes
-pr:
-commit:
+pr: 5
+commit: f433faa
 author: rob@rheged.studio
 co_authors: []
 category: fix
@@ -14,9 +14,9 @@ issues:
   - R-2816
 affected_packages: []
 stats:
-  files_changed:
-  loc_added:
-  loc_removed:
+  files_changed: 16
+  loc_added: 131
+  loc_removed: 22
   commits:
 ---
 
