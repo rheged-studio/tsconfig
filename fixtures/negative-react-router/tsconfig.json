@@ -1,0 +1,8 @@
+{
+  "extends": [
+    "@rheged-studio/tsconfig/base",
+    "@rheged-studio/tsconfig/dom",
+    "@rheged-studio/tsconfig/app",
+    "@rheged-studio/tsconfig/react-router"
+  ]
+}

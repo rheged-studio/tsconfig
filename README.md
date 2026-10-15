@@ -227,7 +227,8 @@ without Vite's ambient types, for a React app bundled by something other than Vi
 }
 ```
 
-A React Router app hosted on Node rather than Workers:
+A React Router app hosted on Node rather than Workers. The `react-router` layer keeps Node globals
+out of browser route code, so a Node host adds `node` back locally:
 
 ```jsonc
 {
@@ -237,6 +238,9 @@ A React Router app hosted on Node rather than Workers:
     "@rheged-studio/tsconfig/app",
     "@rheged-studio/tsconfig/react-router",
   ],
+  "compilerOptions": {
+    "types": ["node", "vite/client"],
+  },
 }
 ```
 
@@ -256,7 +260,7 @@ replaces the runtime layer's, so a custom array may need them restated locally.
 | `app`                  | role        | —                                | `module: esnext`, `moduleResolution: bundler`, `noEmit`, `allowImportingTsExtensions`, `allowArbitraryExtensions`                                                                                                                                                | bundler blocks in comms, tempest and the React Router apps              |
 | `tooling`              | role        | —                                | `module: nodenext`, `noEmit`, `erasableSyntaxOnly`, `allowImportingTsExtensions`, `rewriteRelativeImportExtensions`                                                                                                                                              | tooling-only tsconfigs (`tsconfig.tools.json`)                          |
 | `react`                | framework   | —                                | `jsx: react-jsx`                                                                                                                                                                                                                                                 | —                                                                       |
-| `react-router`         | framework   | `react`                          | `types: ["node", "vite/client"]`                                                                                                                                                                                                                                 | `@tempest/tsconfig/react-router`                                        |
+| `react-router`         | framework   | `react`                          | `types: ["vite/client"]` (no Node globals; a Node host restates `["node", "vite/client"]`)                                                                                                                                                                       | `@tempest/tsconfig/react-router`                                        |
 | `strictest`            | add-on      | —                                | `exactOptionalPropertyTypes`, `noPropertyAccessFromIndexSignature`, `noImplicitReturns`, `allowUnreachableCode: false`, `allowUnusedLabels: false`                                                                                                               | Astro's `strictest` (minus `noUnused*`)                                 |
 | `node-library`         | combination | base, node22, library            | —                                                                                                                                                                                                                                                                | the npm-package-template trio                                           |
 | `node-tooling`         | combination | base, node22, tooling            | —                                                                                                                                                                                                                                                                | none today (R-2792)                                                     |
@@ -453,13 +457,13 @@ What changes:
 
 ### `@tempest/tsconfig`
 
-| `@tempest/tsconfig`   | Use instead                                                                                     |
-| --------------------- | ----------------------------------------------------------------------------------------------- |
-| `base`                | `base` plus a runtime and a role, or simply the combination that fits                           |
-| `node`                | `node-tooling` for scripts and config; `node-library` for a package built with `tsc`            |
-| `react-library`       | `vite-react-app` (React libraries bundled by Vite, Storybook)                                   |
-| `react-router`        | `react-router-workers` on Workers; `["base", "dom", "app", "react-router"]` for a Node host     |
-| options copied inline | the matching combination (`packages/data`, `packages/security-headers` and Storybook copy them) |
+| `@tempest/tsconfig`   | Use instead                                                                                                                               |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `base`                | `base` plus a runtime and a role, or simply the combination that fits                                                                     |
+| `node`                | `node-tooling` for scripts and config; `node-library` for a package built with `tsc`                                                      |
+| `react-library`       | `vite-react-app` (React libraries bundled by Vite, Storybook)                                                                             |
+| `react-router`        | `react-router-workers` on Workers; `["base", "dom", "app", "react-router"]` plus a local `types: ["node", "vite/client"]` for a Node host |
+| options copied inline | the matching combination (`packages/data`, `packages/security-headers` and Storybook copy them)                                           |
 
 Notes:
 
