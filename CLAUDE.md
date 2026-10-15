@@ -104,9 +104,12 @@ resolve from inside `node_modules`.
 `expected-errors.json` lists the error codes they must produce (one list, or one per compiler where
 TS 6 and TS 7 disagree). `infrastructure/tests/presets.test.ts` packs the package, installs the
 tarball into the gitignored `.fixtures/`, and type-checks every fixture under **TS 6.0.3**
-(`typescript`) and **TS 7.0.2** (the `typescript7` alias). It also checks both preset spellings with
-`--showConfig`, that no preset restates a TS 6 default, the `files` list, and that `astro` still
-matches `astro/tsconfigs/base`. `pnpm test` runs it, so CI's `build-test` lane does too. ESLint
+(`typescript`) and **TS 7.0.2** (the `typescript7` alias), each in its own `.fixtures/<compiler>/`
+copy. A negative fixture must fail with exactly its listed codes, repeats included. It also checks
+both preset spellings with `--showConfig`, that every preset's resolved `compilerOptions` agree
+between TS 6 and TS 7 and match `infrastructure/tests/__snapshots__/` (update a deliberate change
+with `pnpm test -u`), that `library` emits `.js`/`.d.ts`/`.d.ts.map` and no tests, that no preset
+restates a TS 6 default, the `files` list, and that `astro` still matches `astro/tsconfigs/base`. `pnpm test` runs it, so CI's `build-test` lane does too. ESLint
 ignores `fixtures/` so `eslint --fix` can't rewrite the deliberate errors.
 
 The workflow/release shell — `.github/`, `infrastructure/`, `.husky/`, `changelog/`,
