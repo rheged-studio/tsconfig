@@ -11,8 +11,8 @@ repo.
 }
 ```
 
-> **Status: 0.x.** The v1 presets (decided on R-274) are in `presets/`; the first npm publish is
-> R-277. The package stays on 0.x until it has proved itself in real repos (R-2793). See
+> **Status: 0.x.** The v1 presets (decided on R-274) are published to npm; `0.1.0` was the first
+> release (R-277). The package stays on 0.x until it has proved itself in real repos (R-2793). See
 > [Versioning](#versioning).
 
 - [Install](#install)
@@ -42,9 +42,10 @@ and `@rheged-studio/tsconfig/node-library.json` are the same file.
 
 ### Using TypeScript 7
 
-TypeScript 7.0 (the native compiler) has no programmatic API yet; one is due in 7.1. Tools that load
-TypeScript as a library, including **`typescript-eslint`** and **Astro's tooling**, still need
-TypeScript 6. The recommended setup installs TS 6 under the `typescript` name and TS 7 alongside it:
+TypeScript 7.0 (the native compiler) has no stable programmatic API yet: it ships only experimental
+`typescript/unstable/*` entry points, and the stable API is due in 7.1. Tools that load TypeScript as
+a library, including **`typescript-eslint`** and **Astro's tooling**, still need TypeScript 6. The
+recommended setup installs TS 6 under the `typescript` name and TS 7 alongside it:
 
 ```json
 {
@@ -55,9 +56,11 @@ TypeScript 6. The recommended setup installs TS 6 under the `typescript` name an
 }
 ```
 
-Type-check with TS 7; `typescript-eslint` and Astro keep resolving `typescript` to TS 6. The presets
-behave the same under both. (`@typescript/typescript6` is published at 6.0.2, one patch behind
-6.0.3.)
+Type-check with TS 7; `typescript-eslint` and Astro keep resolving `typescript` to TS 6. The two
+packages install different binaries, so there is no clash: `tsc` is TS 7 and `tsc6` is TS 6. The
+presets behave the same under both. (`@typescript/typescript6` is published at 6.0.2, one patch
+behind 6.0.3. This repo tests 6.0.3, so it installs `typescript@^6.0.3` plus a `typescript7` alias
+and runs each `tsc` by path instead.)
 
 ## Pick a preset
 
@@ -116,9 +119,12 @@ Rules worth knowing:
 - **`base` is a building block.** It sets no `module` or `lib`, so it is the first entry of a custom
   array rather than a preset to use on its own. The same goes for the runtime and role layers.
 
-`base` deliberately leaves out options TypeScript 6 already defaults (`esModuleInterop`,
+`base` deliberately leaves out options TypeScript 6 always defaults (`esModuleInterop`,
 `allowSyntheticDefaultImports`, `forceConsistentCasingInFileNames`, `useDefineForClassFields`,
-`DOM.Iterable`), and leaves `noUnusedLocals`/`noUnusedParameters` to ESLint (R-274 D4).
+`DOM.Iterable`), and leaves `noUnusedLocals`/`noUnusedParameters` to ESLint (R-274 D4). Options
+whose TS 6 default depends on another layer stay explicit, so `base` behaves the same in any custom
+array: `resolveJsonModule` and `moduleDetection: force` only default on under some `module`
+settings, and `verbatimModuleSyntax` already implies `isolatedModules`.
 
 ## Examples
 
@@ -288,8 +294,9 @@ The presets hold what is the same across projects. These stay in your own `tscon
   the Workers combinations, list your source directories yourself (or rely on TypeScript's default
   of everything beside the config). React Router's `.react-router/types` and the `.server`/`.client`
   globs belong here too.
-- **Framework type roots and extra ambient types**, such as `jsxImportSource`, `vitest/globals`, or
-  `node` for Workers. Remember to restate the preset's own `types` entries when you add one.
+- **Extra ambient types**, such as `vitest/globals`, or `node` for Workers and Node-hosted React
+  Router apps. Remember to restate the preset's own `types` entries when you add one.
+- **`jsxImportSource`**, for a JSX runtime other than React's.
 - **`customConditions`**, `incremental` and `tsBuildInfoFile`: where build info goes is the repo's
   choice.
 - **Nx's `composite` and `importHelpers`**: see below.
@@ -371,18 +378,26 @@ There is no test preset. A standalone `test.json` cannot work, because `types` a
 other: whichever comes last wipes out the other's globals (R-278). If you use Vitest's `globals`,
 add its types one of two ways.
 
-A one-line local override in the config that covers the tests, restating the preset's `types`:
+A local override in the config that covers the tests, restating the preset's `types`. For a
+`node-library` project, that is the test config below, because `library` excludes the tests from the
+main build:
 
 ```jsonc
+// tsconfig.test.json
 {
-  "extends": "@rheged-studio/tsconfig/node-library",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
+    "noEmit": true,
+    "rootDir": ".",
     "types": ["node", "vitest/globals"],
   },
+  "include": ["src", "test"],
+  "exclude": [],
 }
 ```
 
-(For `vite-react-app` that is `["vite/client", "vitest/globals"]`.)
+(For `vite-react-app`, whose own config already covers the tests, add
+`"types": ["vite/client", "vitest/globals"]` to `tsconfig.json`.)
 
 Or a declaration file in the test directory, which works even though `base` sets `types: []`:
 
@@ -614,7 +629,7 @@ the release shell.
 
 This repo was spawned from **npm-package-template** and initialised with `/initialise-package-repo`
 (R-275). The subsections below are inherited from the template and describe what the release shell
-expects; they are kept as the reference for the npm bootstrap in R-277.
+expects; R-277 used them for the npm bootstrap, and they stay as the reference.
 
 Done in R-275:
 
@@ -626,10 +641,11 @@ Done in R-275:
 - [x] Registered in Clacks `fleet.json` with `release: null` (changelog only, no release PRs).
 - [x] Claude review prerequisites inherited org-wide.
 
-Left for R-277:
+Done in R-277:
 
-- [ ] [Bootstrap publish](#npm-oidc-trusted-publishing) and the Trusted Publisher.
-- [ ] Flip the Clacks `fleet.json` entry to `release: "npm"`.
+- [x] [Bootstrap publish](#npm-oidc-trusted-publishing) of `0.1.0`, the `v0.1.0` tag, and the
+      Trusted Publisher.
+- [x] Flipped the Clacks `fleet.json` entry to `release: "npm"`.
 
 ### Repo-level settings
 
@@ -785,9 +801,9 @@ from publish #2.
 
 ### Enable the Release workflow
 
-The Release workflow (`pkg-release.yml`) is **enabled** on this repo (R-275); the `v0.0.0` baseline
-tag keeps it from publishing until R-277. Its workflow **name** is `Release`, so it is toggled by
-name:
+The Release workflow (`pkg-release.yml`) is **enabled** on this repo (R-275). It publishes only when
+a release-please PR has bumped the version past its latest tag; every other merge is a no-op. Its
+workflow **name** is `Release`, so it is toggled by name:
 
 ```bash
 gh workflow enable Release
