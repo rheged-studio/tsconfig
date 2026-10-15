@@ -120,11 +120,12 @@ Rules worth knowing:
   array rather than a preset to use on its own. The same goes for the runtime and role layers.
 
 `base` deliberately leaves out options TypeScript 6 always defaults (`esModuleInterop`,
-`allowSyntheticDefaultImports`, `forceConsistentCasingInFileNames`, `useDefineForClassFields`,
-`DOM.Iterable`), and leaves `noUnusedLocals`/`noUnusedParameters` to ESLint (R-274 D4). Options
-whose TS 6 default depends on another layer stay explicit, so `base` behaves the same in any custom
-array: `resolveJsonModule` and `moduleDetection: force` only default on under some `module`
-settings, and `verbatimModuleSyntax` already implies `isolatedModules`.
+`allowSyntheticDefaultImports`, `forceConsistentCasingInFileNames`, `useDefineForClassFields`), and
+leaves `noUnusedLocals`/`noUnusedParameters` to ESLint (R-274 D4). No preset lists the `lib` entries
+`DOM.Iterable` or `DOM.AsyncIterable` either: TS 6 folds them into `DOM` and keeps them only as
+empty stubs. Options whose TS 6 default depends on another layer stay explicit, so `base` behaves
+the same in any custom array: `resolveJsonModule` and `moduleDetection: force` only default on under
+some `module` settings, and `verbatimModuleSyntax` already implies `isolatedModules`.
 
 ## Examples
 
