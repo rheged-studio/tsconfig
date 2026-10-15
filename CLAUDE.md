@@ -24,16 +24,14 @@ The repo was spawned from **npm-package-template** and initialised with `/initia
   `./presets/*.json`) plus `./package.json`; `typescript` is an optional peer, `>=6`. `send-it`'s
   `shippablePaths` (in `.claude/skills/send-it/config.json` and the `.agents/` mirror) lists
   `presets` and `README.md`.
-- **Publishing is deferred to R-277.** Clacks lists the repo with `release: null`, so it opens no
-  release-please PRs and the version stays at `0.0.0`. The `v0.0.0` **baseline tag** matches that
-  version, so `pkg-release.yml` (the `Release` workflow, enabled) skips publishing on every push to
-  `main` and the `changelog-enrich` job still fills post-merge changelog metadata. Do **not** delete
-  that tag or bump the version by hand before R-277 — an untagged version makes `Release` attempt an
-  npm publish that fails without a Trusted Publisher.
+- **Published (R-277).** `0.1.0` was bootstrap-published by hand (passkey), tagged `v0.1.0`, and the
+  npm Trusted Publisher is bound to `pkg-release.yml`. Clacks lists the repo with `release: "npm"`,
+  so release-please PRs flow from here and `pkg-release.yml` publishes through OIDC. The `v0.0.0`
+  baseline tag stays as history. The package is on the **0.x** line until R-2793 promotes it to
+  `1.0.0` (a `Release-As: 1.0.0` footer); from then on, any new error-producing flag is a major.
 - **Already applied (R-275):** the `GO/NO GO` and `Trunk` rulesets with the road-runner-bot bypass,
   the `main`-only `npm-release` environment, `Release` enabled, and the skill configs (Linear key
-  `R`). Still to do at first publish (R-277): the bootstrap publish, the Trusted Publisher, and
-  flipping the Clacks `fleet.json` entry to `release: "npm"`.
+  `R`).
 
 The template's generation checklist and its [README Setup section](README.md#setup) are kept as the
 reference for what the release shell expects.
@@ -288,12 +286,9 @@ orchestrator's inline finalise is retired later (R-801).
 
 ## Release workflow
 
-> **Dormant until R-277.** `Release` is **enabled** here, but this repo has not been published yet:
-> Clacks lists it with `release: null` (no release PRs), and the `v0.0.0` baseline tag matches the
-> unbumped `0.0.0` version, so every push to `main` is a clean publish no-op while the
-> `changelog-enrich` job still runs. The `release` job passes `build: false` (R-624 build-less
-> opt-out) because this config-only package has no `build` script. Everything below describes the
-> workflow once the bootstrap publish is done; the first real version will be above `0.0.0`.
+> **Live since R-277.** The first version (`0.1.0`) was bootstrap-published by hand; every release
+> after it goes through CI as described below. The `release` job passes `build: false` (R-624
+> build-less opt-out) because this config-only package has no `build` script.
 >
 > **Thin caller (R-639).** The release workflow is `.github/workflows/pkg-release.yml` — a thin caller of the estate's shared `reusable-pkg-release.yml` (SHA-pinned to v1.0.2), mirroring eslint-config. A `config` job loads `infrastructure/repo-config.yaml` and passes `npm-scope` / `node-version-file` / the registry URLs to the reusable workflow, which holds all the release logic described below. The file is `pkg-release.yml` (npm Trusted Publishing binds its OIDC subject to repository + workflow **filename**, so configure the Trusted Publisher against `pkg-release.yml`), but the workflow **name** stays `Release` so `gh workflow enable/disable Release` still works.
 
