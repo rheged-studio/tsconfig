@@ -394,8 +394,9 @@ Or a declaration file in the test directory, which works even though `base` sets
 **Recommended: leave `globals: false` (Vitest's default) and import from `vitest` explicitly.** No
 estate repo relies on globals today, and explicit imports need no tsconfig change at all.
 
-`library` excludes `*.test.ts` and `*.spec.ts` from the build. To type-check tests, give them their
-own config that widens `include` and `rootDir`:
+`library` excludes test files (`*.test.*`, `*.spec.*`, `*.test-d.ts`, `__tests__/`) and
+benchmarks (`*.bench.*`) from the build. To type-check tests, give them their own config that widens
+`include` and `rootDir`:
 
 ```jsonc
 // tsconfig.test.json

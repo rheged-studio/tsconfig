@@ -22,10 +22,14 @@
     "outDir": "${configDir}/dist"
   },
   "include": ["${configDir}/src"],
-  // Tests are type-checked by the test runner's config, never emitted to dist.
+  // Tests, type tests and benchmarks are type-checked by the test runner's
+  // config, never emitted to dist.
   "exclude": [
     "${configDir}/dist",
-    "${configDir}/src/**/*.test.ts",
-    "${configDir}/src/**/*.spec.ts"
+    "${configDir}/src/**/__tests__",
+    "${configDir}/src/**/*.test.*",
+    "${configDir}/src/**/*.spec.*",
+    "${configDir}/src/**/*.test-d.ts",
+    "${configDir}/src/**/*.bench.*"
   ]
 }
