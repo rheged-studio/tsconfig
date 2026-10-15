@@ -3,7 +3,8 @@
   "display": "Rheged Studio — browser runtime",
   // Runtime layer for code bundled for the browser. Owns `lib` and `target`.
   // `dom` includes the iterable DOM types in TS 6, so there is no
-  // `dom.iterable`. The bundler handles any further downlevelling.
+  // `dom.iterable`. A bundler downlevels syntax, not library APIs, so `lib`
+  // stops at es2023 for the browsers Vite targets by default.
   "compilerOptions": {
     "lib": ["es2023", "dom"],
     "target": "es2022"

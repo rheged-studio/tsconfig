@@ -227,7 +227,8 @@ without Vite's ambient types, for a React app bundled by something other than Vi
 }
 ```
 
-A React Router app hosted on Node rather than Workers:
+A React Router app hosted on Node rather than Workers. The `react-router` layer keeps Node globals
+out of browser route code, so a Node host adds `node` back locally:
 
 ```jsonc
 {
@@ -237,6 +238,9 @@ A React Router app hosted on Node rather than Workers:
     "@rheged-studio/tsconfig/app",
     "@rheged-studio/tsconfig/react-router",
   ],
+  "compilerOptions": {
+    "types": ["node", "vite/client"],
+  },
 }
 ```
 
@@ -248,7 +252,7 @@ replaces the runtime layer's, so a custom array may need them restated locally.
 | Preset                 | Layer       | Extends                          | Key options                                                                                                                                                                                                                                                      | Replaces                                                                |
 | ---------------------- | ----------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
 | `base`                 | base        | —                                | `strict`, `noUncheckedIndexedAccess`, `noImplicitOverride`, `noFallthroughCasesInSwitch`, `noUncheckedSideEffectImports`, `verbatimModuleSyntax`, `isolatedModules`, `moduleDetection: force`, `skipLibCheck`, `resolveJsonModule`, target `es2022`, `types: []` | the shared core of every audited config                                 |
-| `node22`               | runtime     | —                                | lib `es2024` + `es2025.collection` + `es2025.iterator` + `esnext.array`, target `es2022`, `types: ["node"]`                                                                                                                                                      | the template trio's `lib ES2022`/`types node`; `@tempest/tsconfig/node` |
+| `node22`               | runtime     | —                                | lib `es2024` + `es2025.collection` + `es2025.iterator` + `esnext.array`, target `es2024`, `types: ["node"]`                                                                                                                                                      | the template trio's `lib ES2022`/`types node`; `@tempest/tsconfig/node` |
 | `node24`               | runtime     | —                                | lib `es2025` + `esnext.disposable` + `esnext.error`, target `es2025`, `types: ["node"]`                                                                                                                                                                          | —                                                                       |
 | `dom`                  | runtime     | —                                | lib `es2023` + `dom`, target `es2022`                                                                                                                                                                                                                            | `DOM`/`DOM.Iterable` lib lines                                          |
 | `workers`              | runtime     | —                                | lib and target `es2024`, no DOM, `types: ["./worker-configuration.d.ts"]`                                                                                                                                                                                        | per-app Workers `types` lines                                           |
@@ -256,7 +260,7 @@ replaces the runtime layer's, so a custom array may need them restated locally.
 | `app`                  | role        | —                                | `module: esnext`, `moduleResolution: bundler`, `noEmit`, `allowImportingTsExtensions`, `allowArbitraryExtensions`                                                                                                                                                | bundler blocks in comms, tempest and the React Router apps              |
 | `tooling`              | role        | —                                | `module: nodenext`, `noEmit`, `erasableSyntaxOnly`, `allowImportingTsExtensions`, `rewriteRelativeImportExtensions`                                                                                                                                              | tooling-only tsconfigs (`tsconfig.tools.json`)                          |
 | `react`                | framework   | —                                | `jsx: react-jsx`                                                                                                                                                                                                                                                 | —                                                                       |
-| `react-router`         | framework   | `react`                          | `types: ["node", "vite/client"]`                                                                                                                                                                                                                                 | `@tempest/tsconfig/react-router`                                        |
+| `react-router`         | framework   | `react`                          | `types: ["vite/client"]` (no Node globals; a Node host restates `["node", "vite/client"]`)                                                                                                                                                                       | `@tempest/tsconfig/react-router`                                        |
 | `strictest`            | add-on      | —                                | `exactOptionalPropertyTypes`, `noPropertyAccessFromIndexSignature`, `noImplicitReturns`, `allowUnreachableCode: false`, `allowUnusedLabels: false`                                                                                                               | Astro's `strictest` (minus `noUnused*`)                                 |
 | `node-library`         | combination | base, node22, library            | —                                                                                                                                                                                                                                                                | the npm-package-template trio                                           |
 | `node-tooling`         | combination | base, node22, tooling            | —                                                                                                                                                                                                                                                                | none today (R-2792)                                                     |
@@ -390,8 +394,9 @@ Or a declaration file in the test directory, which works even though `base` sets
 **Recommended: leave `globals: false` (Vitest's default) and import from `vitest` explicitly.** No
 estate repo relies on globals today, and explicit imports need no tsconfig change at all.
 
-`library` excludes `*.test.ts` and `*.spec.ts` from the build. To type-check tests, give them their
-own config that widens `include` and `rootDir`:
+`library` excludes test files (`*.test.*`, `*.spec.*`, `*.test-d.ts`, `__tests__/`) and
+benchmarks (`*.bench.*`) from the build. To type-check tests, give them their own config that widens
+`include` and `rootDir`:
 
 ```jsonc
 // tsconfig.test.json
@@ -453,13 +458,13 @@ What changes:
 
 ### `@tempest/tsconfig`
 
-| `@tempest/tsconfig`   | Use instead                                                                                     |
-| --------------------- | ----------------------------------------------------------------------------------------------- |
-| `base`                | `base` plus a runtime and a role, or simply the combination that fits                           |
-| `node`                | `node-tooling` for scripts and config; `node-library` for a package built with `tsc`            |
-| `react-library`       | `vite-react-app` (React libraries bundled by Vite, Storybook)                                   |
-| `react-router`        | `react-router-workers` on Workers; `["base", "dom", "app", "react-router"]` for a Node host     |
-| options copied inline | the matching combination (`packages/data`, `packages/security-headers` and Storybook copy them) |
+| `@tempest/tsconfig`   | Use instead                                                                                                                               |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `base`                | `base` plus a runtime and a role, or simply the combination that fits                                                                     |
+| `node`                | `node-tooling` for scripts and config; `node-library` for a package built with `tsc`                                                      |
+| `react-library`       | `vite-react-app` (React libraries bundled by Vite, Storybook)                                                                             |
+| `react-router`        | `react-router-workers` on Workers; `["base", "dom", "app", "react-router"]` plus a local `types: ["node", "vite/client"]` for a Node host |
+| options copied inline | the matching combination (`packages/data`, `packages/security-headers` and Storybook copy them)                                           |
 
 Notes:
 
